@@ -34,6 +34,15 @@
 *.plg
 
 .vs/
+*.fsh
+*.vsh
+*.gsh
+*.json
+*.glsl
+*.msmeta
+*.properties
+*.exp
+*.pdb
 bin/
 
 third_party/
