@@ -1,0 +1,300 @@
+AMBERSTONEDREAM.COM
+our website = http://www.amberstonedream.com/en/home.php
+
+For use 3d models use this website page: http://www.amberstonedream.com/en/objets.php
+
+
+- Amberstone september 2020 update 3.55  Various bug fix and optimisation
+Few 3d texture and size optimisation
+Andesite and mossy cobblestone walls bug fix
+move beehive and bee-nest textures to another localisation (cause lag when their used in large size) 
+add 9 new textures
+
+New main menu background !
+
+----------------------------------------------------------------------------------------------------------------
+
+- Amberstone august 2020 update 3.50  more 220 new features and 1.16 update (1.16)   (Pack by Oldfarmer) (12/08/2020)
+
+NEW CONTENTS:
+17 new 3D pastel by http://www.dessins-pastel-crayon.com/
+10 new 3D various painting http://www.amberstonedream.com/travel/
+73 various new 3D (Amberstone community)
+6 new cushion
+48 textures
+4 3d wall blocks
+5 new slab and stairs collection
+3 new fence models ( wood barrier, and white / grey store)
+Iron chain, rust on water
+2 new trapdoor (wood and glass)
+- Pressure plate (1 orientable wood, 2 scrap stone, 2 small slab pavement) 
+polished blackstone (obsidian buttom and 1 scale meter for armor stand on the ground)
+4 New street store (dead horn coral fan)
+2 new 3d on composter
+4 new 3d turtle eggs
+5 new bed textures (Cubed realism) 
+2 new anvil (white and gres)
+2 new signs (invisible and wood)
+2 new scaffolding (grey and black)
+- stonecutter (1 wood outdoor slab, and 4 drain gate models)
+BUTTOM
+- Crimson button
+ground: (3 new models
+wall: 1 new 3d and open sign (bell fix)
+ceilling: bell fix elements
+- Warped buttom
+ground: white wood wall pleint
+wall: 2 handles
+ceilling: 1 beam, 1 neon, and exit sign
+sweet berries: 4 vegetations elements (cactus, berry tree, and ground elements)
+Twisted vines: vines models (Cubed realism) 
+2 45° iron beams on the red nether brick stairs (rust and black)
+2 new full walls on the brick and mossy stone brick wall bottom
+1 gres wall
+1 dark wood wall
+1 rust iron wall with 2 beams models
+4 biome variant glass (river biome) 
+
+New loading screen 
+New Minecraft menu text
+
+UPDATES:
+7 new pot variant
+16 flower pot compatible with the armor stand and item fram
+14 3d block elements (lamps composter and street 3ds) compatible with the armor stand and item fram
+
+MODIFICATIONS:
+Redstone block texture modification
+bell was removed
+Various bug fix
+-----------------------------------------------------------------------------------------------------------------
+
+- Amberstone july 2020 update 3.10  compatibility and geometry update (1.15)   (Pack by Oldfarmer) (20/07/2020)
+
+NEW CONTENTS: 
+Carbon and metal texture on the dropper (orientation top and down)
+4 new wheels models
+new Minecraft menu random text
+All carpet are usable on item frams
+More than 300 geometrical construction elements add all carpet colors, metal, white, carbon, wood, block, and glass
+New font (font)
+
+1.15 Various bug fix
+
+MODIFICATIONS:
+- Chest and trapped chest change (for 1.15 fix)
+- Light blue terracotta, Cyan terracota, lime wool, clay (texture upgrade)
+- Lime carpet (new texture)
+- hopper powered (now in white)
+
+Suppression
+All 3D on the bells are removed for a change of location in 1.16
+
+ps try the mojang logo on the banners :p
+
+----------------------------------------------------------------------------------------------------------------
+- Amberstone automn 2019 update 3.0  compatible in 1.14  (Pack by Oldfarmer) (19/10/2019)
+
+NEW CONTENTS: 
+5 textures (Oldfarmer)
+3 New flowers (Oldfarmer)
+Bamboo  (Pasquale)
+54 3D on Armor-stand (Oldfamer 33) (Xylocraft 3) (Aude205 3) (Thunder 2) (Brenda 3) (Aydenn 3) (LaBaveuse 1) (Helmdept 1) (Niamie 1)
+4 new potted flower (Oldfarmer)
+5 3D on composter (Oldfarmer)
+10 3D on birch buttom (Oldfarmer)
+4 3D campfire on and off (Oldfarmer)
+1 3D on lectern (Oldfarmer)
+8 3D on Bell (Oldfarmer and Maru)
+1 3D lantern (Oldfarmer)
+5 news signs (Oldfarmer)
+12 walls (Oldfarmer)
+20 slabs (Oldfarmer)
+15 stairs (Oldfarmer)
+3 3D on Gringstone (Oldfarmer)
+1 New fence 
+
+EXTERNAL NEW CONTENTS: 
+Carpet on stair addon by Boomber306
+https://www.planetminecraft.com/mod/carpet-on-stairs-1-13-1-14/
+
+MODIFICATIONS:
+Bikes improvement
+TNT improvement
+some 3D position changes
+Font improvement
+Menu and loading change
+Particles improvement
+
+-----------------------------------------------------------------------------------------------------------
+
+- Amberstone 1.14 compatibility update 2.85  compatible in 1.13 and 1.14 (Pack by Oldfarmer) (22/07/2019)
+
+MODIFICATIONS:
+- painting upgrade
+- full 1.14 compatibility
+- various bug fix
+- 1 new texture (gravel)
+
+-----------------------------------------------------------------------------------------------------------
+
+- Amberstone spring 2019 update 2.80  compatible in 1.13  (Pack by Oldfarmer) (26/04/2019)
+
+NEW CONTENTS: 
+27 plants and corals
+7 textures
+58 3D 
+models
+2 various éléments
+
+MODIFICATIONS:
+1 updated texture
+8 3D modify + 7 new versions
+
+-----------------------------------------------------------------------------------------------------------
+
+- Amberstone winter 2.50 compatible in 1.13 (Pack by Oldfarmer)
+
+85 new 3d models made by Amberstone community and 45 new textures 
+
+
+- Amberstone summer 2018 update
+
+Community models:
+
+Jetski: by Killiawn
+Turkey buoy: by LaP1tade
+Bottle 1: by Viciouspider
+Bottle 2: by Viciouspider
+Bottle 3: by Viciouspider
+Barbecue: by MrAze1145
+Pump: by BrandNintendo
+Bag: by BrandNintendo
+IceHouse: by MrAze1145
+IceCream: by LaP1tade
+Mower: by Killiawn
+Plate: by LaP1tade
+Cup: by LaP1tade
+Tea-pot: by LaP1tade
+Bow: by Viciouspider
+Arrow: by Viciouspider
+Diabolo: by Viciouspider
+Pouffe: by SpinosT
+remote control: by SpinosT
+Rotofil: by Killiawn
+Anchor: by LaP1tade
+basketball hoop: by Killiawn
+Sport training: by LaP1tade
+Shower: by Ouistix
+surfboard red: by Oldfarmer
+surfboard green: by Oldfarmer
+surfboard blue: by Oldfarmer
+Beach towel blue: by Oldfarmer
+Beach towel pink: by Oldfarmer
+Beach towel Green: by Oldfarmer
+Children Carpet: by Oldfarmer
+Persan Carpet: by Oldfarmer
+Modern carpet: by Oldfarmer
+Mug: by Oldfarmer
+Glass: by Oldfarmer
+Magazine: by Oldfarmer
+Wall Poster: by Oldfarmer
+Travel frame: by Oldfarmer
+
+SPECIAL THANKS TO WACHAMARU FOR THIS MODELS  https://www.planetminecraft.com/member/wachamaru/
+Kayak: by Wachamaru
+Beach chair: by Wachamaru
+
+amberstone summer 2018 Update compatible minecraft 1.12 (Pack by Oldfarmer)
+
+10 new objets Community models:
+
+Big cat: by lolypop
+violin: by LaP1tade
+Drum: by SpinosT
+guitar: by SpinosT
+tripod: by SpinosT
+camera: by SpinosT
+Drone: by SpinosT
+Vodka: by Viciouspider
+micro: by SpinosT
+headset: by SpinosT 
+
+
+amberstone pack version 2.0 compatible minecraft 1.12 (Pack by Oldfarmer)
+
+Mofications : 
+- 8 Blocs champignons definition améliorée
+- 13 textures modifiés, dont la terre et terre humide
+- 11 lits modifiés
+- Modification du modèle de la table d'enchantement
+- diverse modifications visuels du menu
+- torche redstone ajout en modèle 3d
+- Portillon de bouleau remplacé par des stores (créé par Jacki57)
+- 5 Bateaux modifiés
+- 3 fleurs modifiés, 5 pousses d'arbres, champignons marrons aléatoire
+- 12 Pots de fleurs remplacés par des modèles 3d
+
+Ajouts : 
+- Blocs : 9 nouvelles textures ajoutés sur les glazed
+- Nouveaux 3d
+30 animaux par Elsweyr : https://www.planetminecraft.com/member/elsweyr/
+218 modèles 3d divers réalisés par plusieurs créateurs
+
+Thanks to:
+- Team Tachibana
+- Alan Becker: http://www.alanbecker.net/
+- Elsweyr
+- Vanilla Burp: http://vanillaburp.com/community
+- Realism socity: http://www.realismsociety.com/
+And also french contributor (Jacky57, Xylocraft, Misteriem ...)
+
+
+--------------------------------------------------------------------------------------------------------
+
+
+amberstone pack version 1.7 compatible minecraft 1.12 
+
+Mofications : 
+- Blocs : 10 textures modifiés
+- 8 Tableaux changés
+- Mur de pierre changé avec model 3d
+- Barrière de chêne modifié en model 3d
+- Tapis vert clair changé en nappe
+- torche redstone redevenue classique
+
+Ajouts : 
+- Blocs : 57 nouvelles textures sur nouveaux blocs
+- Blocs : 18 nouvelles textures sur les shulker box
+- Blocs : 2 nouvelles demis dalles
+- Vitres a 45°
+- outils divers main : 4 nouveautées
+- Divers 3d : 6 nouveautées
+
++ 1 easter egg à vous de le trouver ;)
+
+amberstone pack version 1.6 compatible minecraft 1.11 et superieur
+
+Mofications : 
+- Blocs : 16 blocs modifiés
+- Plantes : 11 plantes changées
+- Coffre piégé, porte métalique changé
+- Tenue cuir modifié 
+- Ciel jour / nuit changé
+
+Ajouts : 
+- Blocs : 45 nouvelles textures sur les shulker box
+- Armes / sport : 16 nouveautées
+- Divers 3d : 35 nouveautées
+- 4 nouvelles barrières
+- 6 nouvelles lampes 3d
+- 6 items customs / 2 nouveaux tableaux
+
+Nous espérons que le nouveau pack Amberstone vous plaira ..
+
+
+majority of 3d model made by nidhogg for amberstone
+few 3d model from tachibana pack like clock katana ...
+and computer from operation realism ..
+
+2 painting of glass, sunset on sea, glass of wine and little girl from this site http://www.dessins-pastel-crayon.com/ beautifull pastel I recommand visit it 

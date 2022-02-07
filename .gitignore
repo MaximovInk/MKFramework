@@ -43,6 +43,7 @@
 *.properties
 *.exp
 *.pdb
+*.tlog
 bin/
 
 third_party/
