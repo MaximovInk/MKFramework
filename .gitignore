@@ -34,5 +34,6 @@
 *.plg
 
 .vs/
+bin/
 
 third_party/
