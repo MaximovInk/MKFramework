@@ -33,4 +33,6 @@
 
 *.plg
 
+.vs/
+
 third_party/
