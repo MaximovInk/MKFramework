@@ -32,6 +32,11 @@ void MKGraphics::enable(GLenum cap)
 	glEnable(cap);
 }
 
+void MKGraphics::blendEnable()
+{
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+}
+
 void MKGraphics::disable(GLenum cap)
 {
 	glDisable(cap);

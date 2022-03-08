@@ -8,9 +8,9 @@
 
 namespace MKGame {
 
-#define CHUNK_W 16
-#define CHUNK_H 128
-#define CHUNK_D 16
+#define CHUNK_W 128 //x
+#define CHUNK_H 11 //y
+#define CHUNK_D 128//z
 #define CHUNK_VOL (CHUNK_W * CHUNK_H * CHUNK_D)
 
 	class chunk {
@@ -18,11 +18,14 @@ namespace MKGame {
 		MKEngine::mesh* _mesh;
 
 		uint8_t* data;
+		uint8_t* bitmasks;
 
 		std::vector<tile> tiles;
 
 		chunk();
 
+		void updateBitmasks();
+		void updateBitmask(int x, int y, int z);
 		void generateMesh();
 		void draw();
 

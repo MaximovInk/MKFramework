@@ -18,6 +18,7 @@ namespace MKGraphics {
 	MK_ENGINE_API void clearColor(GLfloat r,GLfloat g,GLfloat b,GLfloat a);
 	MK_ENGINE_API void setViewport(GLint x, GLint y, GLsizei width, GLsizei height);
 	MK_ENGINE_API void enable(GLenum cap);
+	MK_ENGINE_API void blendEnable();
 	MK_ENGINE_API void disable(GLenum cap);
 	MK_ENGINE_API void setPolygonMode(GLenum face, GLenum mode);
 	

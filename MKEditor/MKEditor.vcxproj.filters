@@ -36,6 +36,12 @@
     <ClCompile Include="src\minecraft\chunk.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="src\minecraft\blockMap.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="src\minecraft\blocks.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\shaders\simpleShader.frag" />
@@ -55,6 +61,9 @@
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="src\minecraft\tile.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="src\minecraft\blocks.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

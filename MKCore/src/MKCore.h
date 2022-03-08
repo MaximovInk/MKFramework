@@ -15,3 +15,4 @@ namespace MKEngine {
 #include "scene/scene.h"
 #include "scene/component.h"
 #include "scene/meshComponent.h"
+#include "scene/textureComponent.h"

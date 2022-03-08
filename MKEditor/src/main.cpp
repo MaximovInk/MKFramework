@@ -18,6 +18,9 @@
 #include "graphicsUtils.h"
 //#include "scene/scene.h"
 #include "minecraft/chunk.h"
+#include "minecraft/blocks.h"
+#include "perlinNoise/PerlinNoise.hpp"
+
 
 using namespace MKEngine;
 using namespace MKGraphics;
@@ -27,6 +30,7 @@ shader* sh;
 texture* tex;
 camera* cam;
 glm::mat4 model = glm::mat4(1.0);
+//MKGame::blocks* blocks;
 
 MKEngine::scene* _scene;
 
@@ -126,7 +130,7 @@ void winRenderCallback(window* wnd, float deltaTime)
 	clearColor(229.0/255,204.0/255,214.0/255,1);
 	setViewport(0, 0, wnd->getWidth(), wnd->getHeight());
 	
-	tex->bind();
+	//tex->bind();
 	sh->use();
 	sh->setMat4("camMatrix", cam->Matrix);
 	sh->setMat4("model", model);
@@ -159,6 +163,44 @@ void winRenderCallback(window* wnd, float deltaTime)
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
+MKEngine::entity* createFlower() {
+	auto _ent = _scene->createEntity();
+	auto _mc = new MKEngine::meshComponent(_ent);
+	auto _tc = new MKEngine::textureComponent(_ent);
+
+	_mc->mesh = MKEngine::Utils::makeQuad(glm::vec2(0, 0), glm::vec2(1, 1), MKGraphics::AXIS_Z);
+
+	_mc->shader = new shader(
+		"C:\\Users\\Danila\\Documents\\Github\\MKFramework\\resources\\shaders\\paintShader.vert",
+		"C:\\Users\\Danila\\Documents\\Github\\MKFramework\\resources\\shaders\\paintShader.frag");
+
+	_tc->_texture = new texture("C:\\flower.png", "diffuse", 0, GL_UNSIGNED_BYTE);
+
+	_ent->components.push_back(_tc);
+	_ent->components.push_back(_mc);
+
+	return _ent;
+}
+
+MKEngine::entity* createWood() {
+	auto _ent = _scene->createEntity();
+	auto _mc = new MKEngine::meshComponent(_ent);
+	auto _tc = new MKEngine::textureComponent(_ent);
+
+	_mc->mesh = MKEngine::Utils::makeQuad(glm::vec2(0, 0), glm::vec2(1, 1), MKGraphics::AXIS_Z);
+
+	_mc->shader = new shader(
+		"C:\\Users\\Danila\\Documents\\Github\\MKFramework\\resources\\shaders\\paintShader.vert",
+		"C:\\Users\\Danila\\Documents\\Github\\MKFramework\\resources\\shaders\\paintShader.frag");
+
+	_tc->_texture = new texture("C:\\wood.png", "diffuse", 0, GL_UNSIGNED_BYTE);
+
+	_ent->components.push_back(_tc);
+	_ent->components.push_back(_mc);
+
+	return _ent;
+}
+
 
 int main(int argc, char* args[]) {
 	application::init();
@@ -171,27 +213,111 @@ int main(int argc, char* args[]) {
 	LOG::info("fsgd {}, {}", 0, 25);
 	MKEngine::utilsExample1();
 	MKGraphics::enable(GL_DEPTH_TEST);
+	MKGraphics::enable(GL_BLEND);
+	MKGraphics::blendEnable();
+
+	std::string solutionDir = "C:\\Users\\Danila\\Documents\\GitHub\\MKFramework\\";
+	std::string resDir = solutionDir + "resources\\";
 
 	sh = new shader(
-		"C:\\Users\\MInk\\source\\repos\\MKFramework\\resources\\shaders\\simpleShader.vert",
-		"C:\\Users\\MInk\\source\\repos\\MKFramework\\resources\\shaders\\simpleShader.frag");
+		(resDir+ "shaders\\simpleShader.vert").c_str(),
+		(resDir+ "shaders\\simpleShader.frag").c_str());
 
-	tex = new texture("C:\\Users\\MInk\\source\\repos\\MKFramework\\resources\\textures\\common\\dirt.png","diffuse",0, GL_UNSIGNED_BYTE);
+	tex = new texture((resDir+"textures\\common\\dirt.png").c_str(), "diffuse", 0, GL_UNSIGNED_BYTE);
 	
 	cam = new camera(glm::vec3(0,0,2));
 	
 	chunk = new MKGame::chunk();
 
-	for (size_t i = 0; i < 16; i++)
+	MKGame::blocks::setTex(new texture((resDir + "textures\\blocks.png").c_str(), "diffuse", 0, GL_UNSIGNED_BYTE));
+	MKGame::blocks::registerData(new MKGame::dirt());
+	MKGame::blocks::registerData(new MKGame::grass());
+	
+	
+	_scene = new scene();
+
+	_scene->cam = cam;
+
+	_scene->createEntity();
+	_scene->createEntity();
+	_scene->createEntity();
+	auto ent1 = _scene->createEntity();
+	ent1->name = "Example name";
+	_scene->createEntity();
+	_scene->createEntity();
+
+	createFlower();
+
+	
+	float counter = 0;
+	float rot = 45.0f;
+
+	const siv::PerlinNoise::seed_type seed = 12345u;
+	const siv::PerlinNoise perlin{ seed };
+
+	/*
+	for (int y = 0; y < 5; ++y)
 	{
-		for (size_t j = 0; j < 16; j++)
+		for (int x = 0; x < 5; ++x)
 		{
-			chunk->setTile(glm::ivec3(i, 0, j), 15);
-			chunk->setTile(glm::ivec3(i, 1, j), 15);
-			chunk->setTile(glm::ivec3(i, 2, j), 15);
+			const double noise = perlin.octave2D_01((x * 0.01), (y * 0.01), 4);
+			
+			std::cout << noise << '\t';
 		}
+
+		std::cout << '\n';
+	}
+	*/
+
+	for (size_t i = 0; i < 128; i++)
+	{
+		for (size_t j = 0; j < 128; j++)
+		{
+			const double noise = perlin.octave2D_01((i * 0.01), (j * 0.01),16,0.6)*10;
+
+			///LOG::info("noise {}", noise);
+
+			/*
+			chunk->setTile(glm::ivec3(i, 0, j), 1);
+			chunk->setTile(glm::ivec3(i, 1, j), 1);
+			chunk->setTile(glm::ivec3(i, 2, j), 2);
+			*/
+
+			int maxH = static_cast<int>(noise);
+
+			for (int h = 0; h <= maxH; h++)
+			{
+				if (h == maxH) {
+					chunk->setTile(glm::ivec3(i, h, j), 2);
+				}
+				else {
+					chunk->setTile(glm::ivec3(i, h, j), 1);
+				}
+			}
+
+			/*
+			counter += 0.2f;
+
+			if (counter > 3.0f)
+			{
+				counter /= 2.3f;
+
+				auto flower = createFlower();
+				flower->transform->pos = glm::vec3(i, 3, j);
+				flower->transform->eulerRot = glm::vec3(0, rot, 0);
+				flower->transform->updateLocalMatrix();
+				rot += counter * 2.0f;
+				if (rot > 60.0f)
+					rot = 35.0f;
+			}
+			*/
+		}
+		/*counter += 0.5f;*/
 	}
 
+	//createWood();
+	
+	chunk->updateBitmasks();
 	chunk->generateMesh();
 	
 
@@ -206,18 +332,7 @@ int main(int argc, char* args[]) {
 	*/
 	
 
-	_scene = new scene();
-
-	_scene->cam = cam;
-
-	_scene->createEntity();
-	_scene->createEntity();
-	_scene->createEntity();
-	auto ent1 = _scene->createEntity();
-	ent1->name = "Example name";
-	_scene->createEntity();
-	_scene->createEntity();
-
+	
 	
 	/*
 	

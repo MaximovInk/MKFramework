@@ -4,13 +4,13 @@
 namespace MKGraphics {
 	VAO::VAO()
 	{
-		LOG::info("VAO CREATED");
+		//LOG::info("VAO CREATED");
 		glGenVertexArrays(1, &ID);
 	}
 
 	void VAO::LinkAttrib(VBO& VBO, GLuint layout, GLuint numComponents, GLenum type, GLsizeiptr stride, void* offset)
 	{
-		LOG::info("VAO LINK ATTRIB");
+		//LOG::info("VAO LINK ATTRIB");
 		VBO.Bind();
 		glVertexAttribPointer(layout, numComponents, type, GL_FALSE, stride, offset);
 		glEnableVertexAttribArray(layout);

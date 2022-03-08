@@ -35,14 +35,32 @@ namespace MKEditor {
 					auto _mc = new MKEngine::meshComponent(_ent);
 					_mc->mesh = MKEngine::Utils::makeCube();
 					_mc->shader = new shader(
-						"C:\\Users\\MInk\\source\\repos\\MKFramework\\resources\\shaders\\simpleShader.vert",
-						"C:\\Users\\MInk\\source\\repos\\MKFramework\\resources\\shaders\\simpleShader.frag");
+						"C:\\Users\\Danila\\Documents\\Github\\MKFramework\\resources\\shaders\\simpleShader.vert",
+						"C:\\Users\\Danila\\Documents\\Github\\MKFramework\\resources\\shaders\\simpleShader.frag");
 
 					_ent->components.push_back(_mc);
 				}
 				ImGui::MenuItem("Sphere");
 				ImGui::MenuItem("Plane");
 				ImGui::MenuItem("Cylinder");
+				if(ImGui::MenuItem("Flower") ){
+					auto _ent = _scene->createEntity();
+					auto _mc = new MKEngine::meshComponent(_ent);
+					auto _tc = new MKEngine::textureComponent(_ent);
+
+					_mc->mesh = MKEngine::Utils::makeQuad(glm::vec2(0, 0), glm::vec2(1, 1), MKGraphics::AXIS_Z);
+
+					_mc->shader = new shader(
+						"C:\\Users\\Danila\\Documents\\Github\\MKFramework\\resources\\shaders\\simpleShader.vert",
+						"C:\\Users\\Danila\\Documents\\Github\\MKFramework\\resources\\shaders\\simpleShader.frag");
+
+					_tc->_texture = new texture("C:\\scg.png", "diffuse", 0, GL_UNSIGNED_BYTE);
+
+					_ent->components.push_back(_tc);
+					_ent->components.push_back(_mc);
+
+					
+				}
 				ImGui::EndMenu();
 			}
 

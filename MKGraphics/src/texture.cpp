@@ -68,6 +68,7 @@ texture::texture(const char* image, const char* texType, GLenum slot, GLenum pix
 		glTexParameteri(glTexType, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(glTexType, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
+		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 		glTexImage2D(glTexType, 0, format, widthImg, heightImg, 0, format, pixelType, bytes);
 		glGenerateMipmap(glTexType);
 		glBindTexture(glTexType, 0);

@@ -2,6 +2,7 @@
 #include <vector>
 #include "MKUtils.h"
 #include <glm/gtx/string_cast.hpp>
+#include "blocks.h"
 
 using namespace MKGame;
 
@@ -67,6 +68,53 @@ MKGame::chunk::chunk()
 {
 	_mesh = new MKEngine::mesh();
 	data = new uint8_t[CHUNK_VOL]();
+	bitmasks = new uint8_t[CHUNK_VOL];
+}
+
+void MKGame::chunk::updateBitmasks()
+{
+	for (int x = 0; x < CHUNK_W; x++)
+	{
+		for (int y = 0; y < CHUNK_H; y++)
+		{
+			for (int z = 0; z < CHUNK_D; z++)
+			{
+				updateBitmask(x, y, z);
+			}
+		}
+	}
+
+}
+
+enum CUBE_FACE_MASKS {
+	SOUTH =		0b0000'0001 ,         // +z
+	NORTH =		0b0000'0010,         // -z
+	EAST =		0b0000'0100,         // +x
+	WEST =		0b0000'1000,         // -x
+	TOP =		0b0001'0000,           // +y
+	BOTTOM =	0b0010'0000,         // -y
+};
+
+
+void MKGame::chunk::updateBitmask(int x, int y, int z)
+{
+	uint8_t bitmask = 0;
+
+	if (z<CHUNK_D && getTile(glm::ivec3(x, y, z+1)) != 0)
+		bitmask |= CUBE_FACE_MASKS::SOUTH;
+	if (z > 0 && getTile(glm::ivec3(x, y, z -1)) != 0)
+		bitmask |= CUBE_FACE_MASKS::NORTH;
+	if (x < CHUNK_W && getTile(glm::ivec3(x+1, y, z )) != 0)
+		bitmask |= CUBE_FACE_MASKS::EAST;
+	if (x > 0 && getTile(glm::ivec3(x-1, y, z )) != 0)
+		bitmask |= CUBE_FACE_MASKS::WEST;
+	if (y < CHUNK_H && getTile(glm::ivec3(x, y+1, z )) != 0)
+		bitmask |= CUBE_FACE_MASKS::TOP;
+	if (y > 0 && getTile(glm::ivec3(x, y-1, z )) != 0)
+		bitmask |= CUBE_FACE_MASKS::BOTTOM;
+
+	int index = y * CHUNK_W * CHUNK_D + z * CHUNK_W + x;
+	bitmasks[index] = bitmask;
 }
 
 void MKGame::chunk::generateMesh()
@@ -79,42 +127,36 @@ void MKGame::chunk::generateMesh()
 			for (int z = 0; z < CHUNK_D; z++)
 			{
 				glm::vec3 pos = glm::vec3(x, y, z);
-				if (getTile(pos) == 0)
+
+				int index = pos.y * CHUNK_W * CHUNK_D + pos.z * CHUNK_W + pos.x;
+				int tileID = data[index];
+				if (tileID == 0)
 					continue;
 				else {
-					LOG::info("GEN");
+					//LOG::info("GEN");
 				}
 
-				emitFace(pos, MKGame::TOP, glm::vec2(0.0), glm::vec2(1.0));
-				emitFace(pos, MKGame::NORTH, glm::vec2(0.0), glm::vec2(1.0));
-				emitFace(pos, MKGame::SOUTH, glm::vec2(0.0), glm::vec2(1.0));
-				emitFace(pos, MKGame::BOTTOM, glm::vec2(0.0), glm::vec2(1.0));
-				emitFace(pos, MKGame::WEST, glm::vec2(0.0), glm::vec2(1.0));
-				emitFace(pos, MKGame::EAST, glm::vec2(0.0), glm::vec2(1.0));
+				auto data = MKGame::blocks::getData(tileID);
+				auto bitmask = bitmasks[index];
+
+				if ((bitmask & CUBE_FACE_MASKS::NORTH) == 0) 
+					emitFace(pos, MKGame::NORTH, data->getTextureOffset(MKGame::NORTH), TILE_UNIT);
+				if ((bitmask & CUBE_FACE_MASKS::SOUTH) == 0)
+					emitFace(pos, MKGame::SOUTH, data->getTextureOffset(MKGame::SOUTH), TILE_UNIT);
+				if ((bitmask & CUBE_FACE_MASKS::WEST) == 0)
+					emitFace(pos, MKGame::WEST, data->getTextureOffset(MKGame::WEST), TILE_UNIT);
+				if ((bitmask & CUBE_FACE_MASKS::EAST) == 0)
+					emitFace(pos, MKGame::EAST, data->getTextureOffset(MKGame::EAST), TILE_UNIT);
+				if ((bitmask & CUBE_FACE_MASKS::TOP) == 0)
+					emitFace(pos, MKGame::TOP, data->getTextureOffset(MKGame::TOP), TILE_UNIT);
+				if ((bitmask & CUBE_FACE_MASKS::BOTTOM) == 0)
+					emitFace(pos, MKGame::BOTTOM, data->getTextureOffset(MKGame::BOTTOM), TILE_UNIT);
+				
+				
 			}
 		}
 	}
 
-	/*
-	for (size_t x = 0; x < CHUNK_W; x++)
-	{
-		for (size_t y = 0; y < CHUNK_H; y++)
-		{
-			for (size_t z = 0; z < CHUNK_D; z++)
-			{
-				glm::vec3 pos = glm::vec3(1.0);
-
-
-				emitFace(pos, MKGame::TOP,    glm::vec2(0.0), glm::vec2(1.0));
-				emitFace(pos, MKGame::NORTH,  glm::vec2(0.0), glm::vec2(1.0));
-				emitFace(pos, MKGame::SOUTH,  glm::vec2(0.0), glm::vec2(1.0));
-				emitFace(pos, MKGame::BOTTOM, glm::vec2(0.0), glm::vec2(1.0));
-				emitFace(pos, MKGame::WEST,   glm::vec2(0.0), glm::vec2(1.0));
-				emitFace(pos, MKGame::EAST,   glm::vec2(0.0), glm::vec2(1.0));
-			}
-		}
-	}
-	*/
 	/*
 	glm::vec3 pos = glm::vec3(1.0);
 
@@ -132,13 +174,14 @@ void MKGame::chunk::generateMesh()
 
 void MKGame::chunk::draw()
 {
+	MKGame::blocks::getTex()->bind();
 	this->_mesh->draw();
 }
 
 void MKGame::chunk::setTile(glm::ivec3 pos, int tileID)
 {
 	int index = pos.y * CHUNK_W * CHUNK_D + pos.z * CHUNK_W + pos.x;
-	LOG::info("s-POS:{} \t| IND:{} \t| VAL:{}", glm::to_string(pos), std::to_string(index), tileID);
+	//LOG::info("s-POS:{} \t| IND:{} \t| VAL:{}", glm::to_string(pos), std::to_string(index), tileID);
 	data[index] = tileID;
 }
 

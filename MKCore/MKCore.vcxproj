@@ -79,8 +79,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
-    <IncludePath>C:\Users\MInk\source\repos\MKFramework\third_party\include;C:\Users\MInk\source\repos\MKFramework\MKUtils\src;C:\Users\MInk\source\repos\MKFramework\MKGraphics\src;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\MInk\source\repos\MKFramework\third_party\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)third_party\include;$(SolutionDir)MKUtils\src;$(SolutionDir)MKGraphics\src;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)third_party\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -120,7 +120,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>C:\Users\MInk\source\repos\MKFramework\MKGraphics\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)MKGraphics\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -152,6 +152,7 @@
     <ClInclude Include="src\scene\entity.h" />
     <ClInclude Include="src\scene\meshComponent.h" />
     <ClInclude Include="src\scene\scene.h" />
+    <ClInclude Include="src\scene\textureComponent.h" />
     <ClInclude Include="src\scene\transform.h" />
     <ClInclude Include="src\windowing\application.h" />
     <ClInclude Include="src\windowing\window.h" />

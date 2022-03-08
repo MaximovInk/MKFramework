@@ -3,6 +3,5 @@
 namespace MKGame {
 
 	class blockMap {
-
 	};
 }

@@ -78,9 +78,9 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Users\MInk\source\repos\MKFramework\third_party\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)third_party\include;$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
-    <LibraryPath>C:\Users\MInk\source\repos\MKFramework\third_party\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)third_party\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
