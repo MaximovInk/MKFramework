@@ -67,8 +67,8 @@ void MKGame::chunk::emitFace(glm::vec3 pos, CUBE_FACE face, glm::vec2 uvOffset, 
 MKGame::chunk::chunk()
 {
 	_mesh = new MKEngine::mesh();
-	data = new uint8_t[CHUNK_VOL]();
-	bitmasks = new uint8_t[CHUNK_VOL];
+	data = new uint8_t[CHUNK_VOL](0);
+	bitmasks = new uint8_t[CHUNK_VOL](0);
 }
 
 void MKGame::chunk::updateBitmasks()
@@ -180,6 +180,9 @@ void MKGame::chunk::draw()
 
 void MKGame::chunk::setTile(glm::ivec3 pos, int tileID)
 {
+	if (pos.x >= CHUNK_W || pos.z >= CHUNK_D || pos.y >= CHUNK_H || pos.x < 0 || pos.z < 0 || pos.y < 0)
+		return;
+
 	int index = pos.y * CHUNK_W * CHUNK_D + pos.z * CHUNK_W + pos.x;
 	//LOG::info("s-POS:{} \t| IND:{} \t| VAL:{}", glm::to_string(pos), std::to_string(index), tileID);
 	data[index] = tileID;
@@ -187,6 +190,9 @@ void MKGame::chunk::setTile(glm::ivec3 pos, int tileID)
 
 int MKGame::chunk::getTile(glm::ivec3 pos)
 {
+	if (pos.x >= CHUNK_W || pos.z >= CHUNK_D || pos.y >= CHUNK_H || pos.x < 0 || pos.z < 0 || pos.y < 0)
+		return 0;
+
 	int index = pos.y * CHUNK_W * CHUNK_D + pos.z * CHUNK_W + pos.x;
 
 	return data[index];
@@ -194,6 +200,7 @@ int MKGame::chunk::getTile(glm::ivec3 pos)
 
 void MKGame::chunk::checkTile(int index)
 {
+
 	int y = index / (CHUNK_W * CHUNK_D);
 	int dV = index % (CHUNK_W * CHUNK_D);
 	int z = dV / CHUNK_W;

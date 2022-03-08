@@ -24,9 +24,11 @@ public:
 	glm::mat4 getViewMatrix();
 	glm::mat4 getProjMatrix();
 
+	/*
 	void moveRight(float force);
 	void moveForward(float force);
 	void moveUp(float force);
+	*/
 
 	void mouseMove(float mx,float my);
 	//void handleInput(mkWindow* wnd, float deltaTime);

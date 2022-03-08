@@ -36,7 +36,7 @@
     <ClCompile Include="src\minecraft\chunk.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="src\minecraft\blockMap.cpp">
+    <ClCompile Include="src\minecraft\blockMapComponent.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="src\minecraft\blocks.cpp">
@@ -54,7 +54,7 @@
     <ClInclude Include="src\imguiLayouts.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="src\minecraft\blockMap.h">
+    <ClInclude Include="src\minecraft\blockMapComponent.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="src\minecraft\chunk.h">

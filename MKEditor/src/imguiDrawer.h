@@ -5,8 +5,11 @@
 #include "imgui/imgui.h"
 #include <map>
 #include <string>
+#include <regex>
 
 namespace MKEditor {
+
+	
 
 	void drawTransform(MKEngine::transform* _transform) {
 		float v[3] = { _transform->pos.x, _transform->pos.y, _transform->pos.z};
@@ -40,9 +43,12 @@ namespace MKEditor {
 	}
 
 	void drawComponent(MKEngine::component* _component) {
-		if (MKEngine::meshComponent* v = dynamic_cast<MKEngine::meshComponent*>(_component)) {
-			ImGui::Text("Mesh component:");
-		}
+
+		std::string name = std::string(typeid(*_component).name());
+		name.erase(0, 14);
+		name = std::regex_replace(name, std::regex("\\Component"), "");
+		ImGui::Text(name.c_str());
+		//add components drawers
 	}
 
 	void drawEntity(MKEngine::scene* scene, MKEngine::entity* entity) {
@@ -51,11 +57,13 @@ namespace MKEditor {
 
 		drawTransform(entity->transform);
 
+		ImGui::Text("Components:");
 		for (size_t i = 0; i < entity->components.size(); i++)
 		{
 			//ImGui::Text("Component + ");
 			drawComponent(entity->components[i]);
 		}
+
 
 		if (ImGui::Button("Add component")) {
 			ImGui::OpenPopup("Add component");

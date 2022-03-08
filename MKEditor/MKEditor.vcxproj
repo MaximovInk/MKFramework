@@ -159,7 +159,7 @@
     <ClCompile Include="..\third_party\include\imgui\imgui_impl_sdl.cpp" />
     <ClCompile Include="..\third_party\include\imgui\src\misc\cpp\imgui_stdlib.cpp" />
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\minecraft\blockMap.cpp" />
+    <ClCompile Include="src\minecraft\blockMapComponent.cpp" />
     <ClCompile Include="src\minecraft\blocks.cpp" />
     <ClCompile Include="src\minecraft\chunk.cpp" />
   </ItemGroup>
@@ -185,7 +185,7 @@
   <ItemGroup>
     <ClInclude Include="src\imguiDrawer.h" />
     <ClInclude Include="src\imguiLayouts.h" />
-    <ClInclude Include="src\minecraft\blockMap.h" />
+    <ClInclude Include="src\minecraft\blockMapComponent.h" />
     <ClInclude Include="src\minecraft\blocks.h" />
     <ClInclude Include="src\minecraft\chunk.h" />
     <ClInclude Include="src\minecraft\tile.h" />

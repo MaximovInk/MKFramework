@@ -27,6 +27,13 @@ MKEngine::entity* MKEngine::scene::createEntity()
 	return ent;
 }
 
+MKEngine::entity* MKEngine::scene::createEntity(std::string name)
+{
+	auto ent = createEntity();
+	ent->name = name;
+	return ent;
+}
+
 void MKEngine::scene::deleteEntity(entity* entity)
 {
 	entities.erase(std::remove(entities.begin(), entities.end(), entity), entities.end());

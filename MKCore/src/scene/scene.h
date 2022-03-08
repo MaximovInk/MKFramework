@@ -14,6 +14,7 @@ namespace MKEngine {
 		camera* cam;
 
 		MKEngine::entity* createEntity();
+		MKEngine::entity* createEntity(std::string name);
 		void deleteEntity(MKEngine::entity* value);
 		std::vector<MKEngine::entity*> entities;
 	};

@@ -146,6 +146,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\API.h" />
+    <ClInclude Include="src\content\contentManager.h" />
     <ClInclude Include="src\input.h" />
     <ClInclude Include="src\MKCore.h" />
     <ClInclude Include="src\scene\component.h" />

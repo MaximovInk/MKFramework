@@ -25,6 +25,7 @@ glm::mat4 camera::getProjMatrix()
 {
 	return projection;
 }
+/*
 
 void camera::moveRight(float force)
 {
@@ -40,6 +41,7 @@ void camera::moveUp(float force)
 {
 	Position += force * Up;
 }
+*/
 
 void camera::mouseMove(float rotX, float rotY)
 {

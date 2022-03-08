@@ -17,6 +17,7 @@
 #include "MKUtils.h"
 #include "graphicsUtils.h"
 //#include "scene/scene.h"
+#include "minecraft/blockMapComponent.h"
 #include "minecraft/chunk.h"
 #include "minecraft/blocks.h"
 #include "perlinNoise/PerlinNoise.hpp"
@@ -33,17 +34,150 @@ glm::mat4 model = glm::mat4(1.0);
 //MKGame::blocks* blocks;
 
 MKEngine::scene* _scene;
+MKGame::blockMapComponent* blockMap;
 
 int windowWidth;
 int windowHeight;
 
 void SetupImGuiStyle(bool bStyleDark_, float alpha_);
 
+std::string solutionDir = "C:\\Users\\Mink\\source\\repos\\MKFramework\\";
+
 int mouseLockPosX;
 int mouseLockPosY;
-void cameraHandleInput(window* wnd, float deltaTime) {
-	float speed = 3 * deltaTime;
 
+class obj_aabb {
+public:
+	glm::vec3 pos;
+	glm::vec3 size;
+	glm::vec3 velocity;
+	obj_aabb(glm::vec3 pos, glm::vec3 size)
+	{
+		this->pos = pos;
+		this->size = size;
+		this->velocity = glm::vec3(0);
+	}
+};
+
+obj_aabb player(glm::vec3(3,13,3),glm::vec3(0.5f,2,0.5f));
+
+void checkAABB() {
+	glm::vec3 halfSize = glm::vec3(player.size.x / 2, player.size.y / 2, player.size.z / 2);
+	glm::vec3 newPos = player.pos + player.velocity;
+	glm::vec3 min = newPos - halfSize;
+	glm::vec3 max = newPos + halfSize;
+
+
+	if(!blockMap->checkAABB(min, max))
+	{ 
+		player.pos = newPos;
+	}
+	//player.velocity = glm::vec3(0);
+}
+
+
+glm::vec3 lerpV(glm::vec3 x, glm::vec3 y, float t) {
+	return x * (1.f - t) + y * t;
+}
+
+
+void cameraHandleInput(window* wnd, float deltaTime) {
+	float speed = 2.0f * deltaTime;
+
+	cam->Position = player.pos+glm::vec3(0,player.size.y/2,0);
+
+	if (Input::getKey(SDL_SCANCODE_LSHIFT))
+		speed *= 2;
+
+	player.velocity.y += (-9.8 * deltaTime * 0.2f);
+
+	if (player.velocity.y != 0)
+		player.velocity.y = std::clamp(player.velocity.y, -1.0f, 1.0f);
+
+	checkAABB();
+
+	player.velocity = lerpV(player.velocity, glm::vec3(0), 10.0f*deltaTime);
+
+	auto dirForward = cam->Orientation;
+	dirForward.y = 0;
+	dirForward = glm::normalize(dirForward);
+	auto dirRight = glm::normalize(glm::cross(cam->Orientation, cam->Up));
+	auto y = player.velocity.y;
+	player.velocity.y = 0;
+	if (Input::getKey(SDL_SCANCODE_A)) {
+		player.velocity +=  -dirRight;
+		player.velocity = glm::normalize(player.velocity) * speed;
+	}
+	checkAABB();
+	if (Input::getKey(SDL_SCANCODE_D)) {
+		player.velocity += dirRight;
+		player.velocity = glm::normalize(player.velocity) * speed;
+	}
+	checkAABB();
+	if (Input::getKey(SDL_SCANCODE_W)) {
+		player.velocity += dirForward;
+		player.velocity = glm::normalize(player.velocity) * speed;
+	}
+	checkAABB();
+	if (Input::getKey(SDL_SCANCODE_S)){
+		player.velocity += -dirForward;
+		player.velocity = glm::normalize(player.velocity) * speed;
+	}
+	checkAABB();
+
+	player.velocity.y = y;
+
+	if (Input::getKeyDown(SDL_SCANCODE_SPACE))
+	{
+		player.velocity.y += 25.0f * deltaTime;
+	}
+	checkAABB();
+	/*
+
+	auto lastPos = player.pos;
+
+	auto dirForward = cam->Orientation;
+	dirForward.y = 0;
+	dirForward = glm::normalize(dirForward);
+
+
+	auto dirRight = glm::normalize(glm::cross(cam->Orientation, cam->Up));
+
+	if (Input::getKey(SDL_SCANCODE_A))
+		player.pos += speed* -dirRight;
+	if (Input::getKey(SDL_SCANCODE_D))
+		player.pos += speed * dirRight;
+	if (Input::getKey(SDL_SCANCODE_W))
+		player.pos += speed *  dirForward;
+	if (Input::getKey(SDL_SCANCODE_S))
+		player.pos += speed * -dirForward;
+	if (Input::getKeyDown(SDL_SCANCODE_SPACE))
+		player.pos += speed * 20.0f * glm::vec3(0, 1, 0);
+
+
+
+	if (checkAABB()) {
+		player.pos = lastPos;
+	}
+
+	lastPos = player.pos;
+
+	player.pos.y += -9.8f * deltaTime * 1.0f;
+	if (checkAABB()) {
+		player.pos = lastPos;
+	}
+	*/
+
+
+	/*
+	
+	
+
+	
+
+	*/
+	/*
+	
 	if (Input::getKey(SDL_SCANCODE_LSHIFT))
 		speed *= 2;
 	if (Input::getKey(SDL_SCANCODE_A))
@@ -58,6 +192,7 @@ void cameraHandleInput(window* wnd, float deltaTime) {
 		cam->moveUp(speed);
 	if (Input::getKey(SDL_SCANCODE_LCTRL))
 		cam->moveUp(-speed);
+	*/
 
 	if (Input::getMouseButton(SDL_BUTTON_LMASK)) {
 		if (Input::getMouseButtonDown(SDL_BUTTON_LMASK)) {
@@ -83,6 +218,8 @@ void cameraHandleInput(window* wnd, float deltaTime) {
 void winUpdateCallback(window* wnd, float deltaTime) 
 {
 	wnd->getSize(&windowWidth, &windowHeight);
+
+	_scene->update();
 
 	ImGuiIO& io = ImGui::GetIO();
 	if (!io.WantCaptureMouse) {
@@ -123,7 +260,6 @@ void winSDLCallback(window* wnd, SDL_Event event) {
 	ImGui_ImplSDL2_ProcessEvent(&event);
 }
 
-MKGame::chunk* chunk;
 void winRenderCallback(window* wnd, float deltaTime) 
 {
 	clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -136,7 +272,7 @@ void winRenderCallback(window* wnd, float deltaTime)
 	sh->setMat4("model", model);
 
 	//_mesh->draw();
-	chunk->draw();
+	//chunk->draw();
 	_scene->render();
 	
 	ImGui_ImplOpenGL3_NewFrame();
@@ -163,45 +299,6 @@ void winRenderCallback(window* wnd, float deltaTime)
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
-MKEngine::entity* createFlower() {
-	auto _ent = _scene->createEntity();
-	auto _mc = new MKEngine::meshComponent(_ent);
-	auto _tc = new MKEngine::textureComponent(_ent);
-
-	_mc->mesh = MKEngine::Utils::makeQuad(glm::vec2(0, 0), glm::vec2(1, 1), MKGraphics::AXIS_Z);
-
-	_mc->shader = new shader(
-		"C:\\Users\\Danila\\Documents\\Github\\MKFramework\\resources\\shaders\\paintShader.vert",
-		"C:\\Users\\Danila\\Documents\\Github\\MKFramework\\resources\\shaders\\paintShader.frag");
-
-	_tc->_texture = new texture("C:\\flower.png", "diffuse", 0, GL_UNSIGNED_BYTE);
-
-	_ent->components.push_back(_tc);
-	_ent->components.push_back(_mc);
-
-	return _ent;
-}
-
-MKEngine::entity* createWood() {
-	auto _ent = _scene->createEntity();
-	auto _mc = new MKEngine::meshComponent(_ent);
-	auto _tc = new MKEngine::textureComponent(_ent);
-
-	_mc->mesh = MKEngine::Utils::makeQuad(glm::vec2(0, 0), glm::vec2(1, 1), MKGraphics::AXIS_Z);
-
-	_mc->shader = new shader(
-		"C:\\Users\\Danila\\Documents\\Github\\MKFramework\\resources\\shaders\\paintShader.vert",
-		"C:\\Users\\Danila\\Documents\\Github\\MKFramework\\resources\\shaders\\paintShader.frag");
-
-	_tc->_texture = new texture("C:\\wood.png", "diffuse", 0, GL_UNSIGNED_BYTE);
-
-	_ent->components.push_back(_tc);
-	_ent->components.push_back(_mc);
-
-	return _ent;
-}
-
-
 int main(int argc, char* args[]) {
 	application::init();
 	window win("Hello window", 500, 500, 800, 600, SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
@@ -210,13 +307,11 @@ int main(int argc, char* args[]) {
 	application::setGLContext(glContext);
 	MKGraphics::loadGL(reinterpret_cast<GLADloadfunc>(SDL_GL_GetProcAddress));
 	
-	LOG::info("fsgd {}, {}", 0, 25);
 	MKEngine::utilsExample1();
 	MKGraphics::enable(GL_DEPTH_TEST);
 	MKGraphics::enable(GL_BLEND);
 	MKGraphics::blendEnable();
 
-	std::string solutionDir = "C:\\Users\\Danila\\Documents\\GitHub\\MKFramework\\";
 	std::string resDir = solutionDir + "resources\\";
 
 	sh = new shader(
@@ -225,28 +320,20 @@ int main(int argc, char* args[]) {
 
 	tex = new texture((resDir+"textures\\common\\dirt.png").c_str(), "diffuse", 0, GL_UNSIGNED_BYTE);
 	
-	cam = new camera(glm::vec3(0,0,2));
+	cam = new camera(glm::vec3(3,11,3));
 	
-	chunk = new MKGame::chunk();
 
 	MKGame::blocks::setTex(new texture((resDir + "textures\\blocks.png").c_str(), "diffuse", 0, GL_UNSIGNED_BYTE));
 	MKGame::blocks::registerData(new MKGame::dirt());
 	MKGame::blocks::registerData(new MKGame::grass());
 	
-	
 	_scene = new scene();
 
 	_scene->cam = cam;
 
-	_scene->createEntity();
-	_scene->createEntity();
-	_scene->createEntity();
-	auto ent1 = _scene->createEntity();
-	ent1->name = "Example name";
-	_scene->createEntity();
-	_scene->createEntity();
-
-	createFlower();
+	auto blockMapEnt = _scene->createEntity("Block map");
+	blockMap = new MKGame::blockMapComponent(blockMapEnt);
+	blockMapEnt->components.push_back(blockMap);
 
 	
 	float counter = 0;
@@ -255,107 +342,30 @@ int main(int argc, char* args[]) {
 	const siv::PerlinNoise::seed_type seed = 12345u;
 	const siv::PerlinNoise perlin{ seed };
 
-	/*
-	for (int y = 0; y < 5; ++y)
-	{
-		for (int x = 0; x < 5; ++x)
-		{
-			const double noise = perlin.octave2D_01((x * 0.01), (y * 0.01), 4);
-			
-			std::cout << noise << '\t';
-		}
-
-		std::cout << '\n';
-	}
-	*/
-
 	for (size_t i = 0; i < 128; i++)
 	{
 		for (size_t j = 0; j < 128; j++)
 		{
-			const double noise = perlin.octave2D_01((i * 0.01), (j * 0.01),16,0.6)*10;
-
-			///LOG::info("noise {}", noise);
-
-			/*
-			chunk->setTile(glm::ivec3(i, 0, j), 1);
-			chunk->setTile(glm::ivec3(i, 1, j), 1);
-			chunk->setTile(glm::ivec3(i, 2, j), 2);
-			*/
+			const double noise = perlin.octave2D_01((i * 0.01), (j * 0.01), 16, 0.6) * 10;
 
 			int maxH = static_cast<int>(noise);
 
 			for (int h = 0; h <= maxH; h++)
 			{
 				if (h == maxH) {
-					chunk->setTile(glm::ivec3(i, h, j), 2);
+					blockMap->setTile(glm::ivec3(i, h, j), 2);
 				}
 				else {
-					chunk->setTile(glm::ivec3(i, h, j), 1);
+					blockMap->setTile(glm::ivec3(i, h, j), 1);
 				}
 			}
-
-			/*
-			counter += 0.2f;
-
-			if (counter > 3.0f)
-			{
-				counter /= 2.3f;
-
-				auto flower = createFlower();
-				flower->transform->pos = glm::vec3(i, 3, j);
-				flower->transform->eulerRot = glm::vec3(0, rot, 0);
-				flower->transform->updateLocalMatrix();
-				rot += counter * 2.0f;
-				if (rot > 60.0f)
-					rot = 35.0f;
-			}
-			*/
 		}
-		/*counter += 0.5f;*/
 	}
-
-	//createWood();
-	
-	chunk->updateBitmasks();
-	chunk->generateMesh();
 	
 
-	/*
+	//chunk->updateBitmasks();
+	//chunk->generateMesh();
 	
-
-	chunk->checkTile(0);
-	chunk->checkTile(25823);
-	chunk->checkTile(1280);
-	chunk->checkTile(3);
-	chunk->checkTile(99);
-	*/
-	
-
-	
-	
-	/*
-	
-	std::vector<vertex> verts{
-	vertex{glm::vec3(0,0,0), glm::vec3(0),glm::vec3(1), glm::vec2(0,0)},
-	vertex{glm::vec3(0,1,0), glm::vec3(0),glm::vec3(1), glm::vec2(0,1)},
-	vertex{glm::vec3(1,1,0), glm::vec3(0),glm::vec3(1), glm::vec2(1,1)},
-	vertex{glm::vec3(1,0,0), glm::vec3(0),glm::vec3(1), glm::vec2(1,0)}
-	};
-	std::vector<GLuint> ind{ 0,1,2,0,2,3 };
-
-
-	_mesh = new mesh();
-	_mesh->vertices = verts;
-	_mesh->indices = ind;
-	_mesh->applyData();
-	
-	*/
-
-	//_mesh = MKEngine::Utils::makeQuad(glm::vec2(-0.9f),glm::vec2(0.9f),MKGraphics::AXIS_Z);
-	//_mesh = MKEngine::Utils::makeCube();
-	
-
 	auto glsl_version = "#version 460";
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();

@@ -22,6 +22,8 @@ namespace MKGame {
 
 		std::vector<tile> tiles;
 
+		bool isDirty;
+
 		chunk();
 
 		void updateBitmasks();
