@@ -54,6 +54,7 @@ void MKGame::chunk::emitFace(glm::vec3 pos, CUBE_FACE face, glm::vec2 uvOffset, 
 		vertex v;
 		v.position = pos + CUBE_VERTICES[CUBE_INDICES[(face * 6) + UNIQUE_INDICES[i]]];
 		v.texUV = (CUBE_UVS[i] * uvUnit) + uvOffset;
+		v.normal = CUBE_NORMALS[face];
 		//LOG::info(" {} {} {}", i, glm::to_string(v.position), glm::to_string(v.texUV));
 		_mesh->vertices.push_back(v);
 	}
@@ -127,7 +128,7 @@ void MKGame::chunk::generateMesh()
 			for (int z = 0; z < CHUNK_D; z++)
 			{
 				glm::vec3 pos = glm::vec3(x, y, z);
-
+				
 				int index = pos.y * CHUNK_W * CHUNK_D + pos.z * CHUNK_W + pos.x;
 				int tileID = data[index];
 				if (tileID == 0)
@@ -140,17 +141,17 @@ void MKGame::chunk::generateMesh()
 				auto bitmask = bitmasks[index];
 
 				if ((bitmask & CUBE_FACE_MASKS::NORTH) == 0) 
-					emitFace(pos, MKGame::NORTH, data->getTextureOffset(MKGame::NORTH), TILE_UNIT);
+					emitFace(pos + position, MKGame::NORTH, data->getTextureOffset(MKGame::NORTH), TILE_UNIT);
 				if ((bitmask & CUBE_FACE_MASKS::SOUTH) == 0)
-					emitFace(pos, MKGame::SOUTH, data->getTextureOffset(MKGame::SOUTH), TILE_UNIT);
+					emitFace(pos + position, MKGame::SOUTH, data->getTextureOffset(MKGame::SOUTH), TILE_UNIT);
 				if ((bitmask & CUBE_FACE_MASKS::WEST) == 0)
-					emitFace(pos, MKGame::WEST, data->getTextureOffset(MKGame::WEST), TILE_UNIT);
+					emitFace(pos + position, MKGame::WEST, data->getTextureOffset(MKGame::WEST), TILE_UNIT);
 				if ((bitmask & CUBE_FACE_MASKS::EAST) == 0)
-					emitFace(pos, MKGame::EAST, data->getTextureOffset(MKGame::EAST), TILE_UNIT);
+					emitFace(pos + position, MKGame::EAST, data->getTextureOffset(MKGame::EAST), TILE_UNIT);
 				if ((bitmask & CUBE_FACE_MASKS::TOP) == 0)
-					emitFace(pos, MKGame::TOP, data->getTextureOffset(MKGame::TOP), TILE_UNIT);
+					emitFace(pos + position, MKGame::TOP, data->getTextureOffset(MKGame::TOP), TILE_UNIT);
 				if ((bitmask & CUBE_FACE_MASKS::BOTTOM) == 0)
-					emitFace(pos, MKGame::BOTTOM, data->getTextureOffset(MKGame::BOTTOM), TILE_UNIT);
+					emitFace(pos + position, MKGame::BOTTOM, data->getTextureOffset(MKGame::BOTTOM), TILE_UNIT);
 				
 				
 			}
@@ -172,10 +173,35 @@ void MKGame::chunk::generateMesh()
 	//emitFace(glm::vec3(2,0,0), MKGame::NORTH, glm::vec2(0.0), glm::vec2(1.0));
 }
 
+void MKGame::chunk::generatePhysicsMesh()
+{
+	
+	
+	
+}
+
 void MKGame::chunk::draw()
 {
 	MKGame::blocks::getTex()->bind();
 	this->_mesh->draw();
+}
+
+void MKGame::chunk::update()
+{
+	if (isDirty) {
+		updateBitmasks();
+		generateMesh();
+		isDirty = false;
+	}
+	/*
+	
+	auto _chunk = getChunkOrCreateAt(pos);
+	if (_chunk->isDirty) {
+		_chunk->updateBitmasks();
+		_chunk->generateMesh();
+		_chunk->isDirty = false;
+	}
+	*/
 }
 
 void MKGame::chunk::setTile(glm::ivec3 pos, int tileID)
@@ -197,6 +223,7 @@ int MKGame::chunk::getTile(glm::ivec3 pos)
 
 	return data[index];
 }
+/*
 
 void MKGame::chunk::checkTile(int index)
 {
@@ -211,3 +238,5 @@ void MKGame::chunk::checkTile(int index)
 
 	LOG::info("g-POS:{} \t| IND:{} \t| VAL:{}", glm::to_string(pos), std::to_string(index), tileID);
 }
+
+*/

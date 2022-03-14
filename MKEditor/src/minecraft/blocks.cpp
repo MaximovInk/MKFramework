@@ -7,13 +7,11 @@ std::vector<MKGame::block*> _blocks;
 
 glm::vec2 MKGame::dirt::getTextureOffset(MKGame::CUBE_FACE face)
 {
-	//LOG::info("dirt");
 	return MKGame::blocks::getUVfromTilePos(glm::ivec2(0,2));
 }
 
 glm::vec2 MKGame::grass::getTextureOffset(MKGame::CUBE_FACE face)
 {
-	//LOG::info("grass");
 	if (face == MKGame::CUBE_FACE::TOP)
 		return MKGame::blocks::getUVfromTilePos(glm::ivec2(0,0));
 	return MKGame::blocks::getUVfromTilePos(glm::ivec2(1,2));

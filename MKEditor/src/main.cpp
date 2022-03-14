@@ -10,6 +10,7 @@
 #define IMGUI_IMPLEMENTATION
 #include "imgui/imgui.h"
 #include "glm/gtx/string_cast.hpp"
+#include <glm/gtx/matrix_decompose.hpp>
 
 #define SDL_MAIN_HANDLED
 #include "MKCore.h"
@@ -21,7 +22,6 @@
 #include "minecraft/chunk.h"
 #include "minecraft/blocks.h"
 #include "perlinNoise/PerlinNoise.hpp"
-
 
 using namespace MKEngine;
 using namespace MKGraphics;
@@ -46,33 +46,155 @@ std::string solutionDir = "C:\\Users\\Mink\\source\\repos\\MKFramework\\";
 int mouseLockPosX;
 int mouseLockPosY;
 
-class obj_aabb {
+class Hitbox {
 public:
 	glm::vec3 pos;
-	glm::vec3 size;
+	glm::vec3 halfSize;
 	glm::vec3 velocity;
-	obj_aabb(glm::vec3 pos, glm::vec3 size)
+	float linear_damp;
+	bool isGrounded;
+
+	Hitbox(glm::vec3 pos, glm::vec3 halfSize) 
+		: pos(pos), halfSize(halfSize), velocity(0.0f, 0.0f, 0.0f), linear_damp(0.1f)
 	{
-		this->pos = pos;
-		this->size = size;
-		this->velocity = glm::vec3(0);
+
 	}
 };
 
-obj_aabb player(glm::vec3(3,13,3),glm::vec3(0.5f,2,0.5f));
+#define E 0.03
+#define DEFAULT_FRICTION 10.0
+#define DEFAULT_AIR_DAMPING 0.1f
+#define PLAYER_NOT_ONGROUND_DAMPING 10.0f
+#define RUN_SPEED_MUL 1.5f
+#define DEFAULT_PLAYER_SPEED 4.0f
 
-void checkAABB() {
-	glm::vec3 halfSize = glm::vec3(player.size.x / 2, player.size.y / 2, player.size.z / 2);
-	glm::vec3 newPos = player.pos + player.velocity;
-	glm::vec3 min = newPos - halfSize;
-	glm::vec3 max = newPos + halfSize;
 
+const glm::vec3 gravity = glm::vec3(0,-19.6f,0);
+float gravityScale = 1.0;
 
-	if(!blockMap->checkAABB(min, max))
-	{ 
-		player.pos = newPos;
+float camFov = 75.0f;
+
+Hitbox* player;
+
+bool isBlockObstacle(int x, int y, int z) {
+	return blockMap->getTile(glm::ivec3(x, y, z))!= 0;
+}
+
+void physStep(float deltaTime, unsigned physSubsteps) {
+	player->isGrounded = false;
+	for (unsigned i = 0; i < physSubsteps; i++)
+	{
+		float dt = deltaTime / (float)physSubsteps;
+		float linearDump = player->linear_damp;
+		glm::vec3& pos = player->pos;
+		glm::vec3& half = player->halfSize;
+		glm::vec3& vel = player->velocity;
+		vel.x += gravity.x * dt * gravityScale;
+		vel.y += gravity.y * dt * gravityScale;
+		vel.z += gravity.z * dt * gravityScale;
+
+		float px = pos.x;
+		float pz = pos.z;
+
+		if (vel.x < 0.0) {
+			for (int y = floor(pos.y - half.y + E); y <= floor(pos.y + half.y - E); y++) {
+				for (int z = floor(pos.z - half.z + E); z <= floor(pos.z + half.z - E); z++) {
+					int x = floor(pos.x - half.x - E);
+					if (isBlockObstacle(x, y, z)) {
+						vel.x *= 0.0;
+						pos.x = x + 1 + half.x + E;
+						break;
+					}
+				}
+			}
+		}
+		if (vel.x > 0.0) {
+			for (int y = floor(pos.y - half.y + E); y <= floor(pos.y + half.y - E); y++) {
+				for (int z = floor(pos.z - half.z + E); z <= floor(pos.z + half.z - E); z++) {
+					int x = floor(pos.x + half.x + E);
+					if (isBlockObstacle(x, y, z)) {
+						vel.x *= 0.0;
+						pos.x = x - half.x - E;
+						break;
+					}
+				}
+			}
+		}
+
+		if (vel.z < 0.0) {
+			for (int y = floor(pos.y - half.y + E); y <= floor(pos.y + half.y - E); y++) {
+				for (int x = floor(pos.x - half.x + E); x <= floor(pos.x + half.x - E); x++) {
+					int z = floor(pos.z - half.z - E);
+					if (isBlockObstacle(x, y, z)) {
+						vel.z *= 0.0;
+						pos.z = z + 1 + half.z + E;
+						break;
+					}
+				}
+			}
+		}
+
+		if (vel.z > 0.0) {
+			for (int y = floor(pos.y - half.y + E); y <= floor(pos.y + half.y - E); y++) {
+				for (int x = floor(pos.x - half.x + E); x <= floor(pos.x + half.x - E); x++) {
+					int z = floor(pos.z + half.z + E);
+					if (isBlockObstacle(x, y, z)) {
+						vel.z *= 0.0;
+						pos.z = z - half.z - E;
+						break;
+					}
+				}
+			}
+		}
+
+		if (vel.y < 0.0) {
+			for (int x = floor(pos.x - half.x + E); x <= floor(pos.x + half.x - E); x++) {
+				bool broken = false;
+				for (int z = floor(pos.z - half.z + E); z <= floor(pos.z + half.z - E); z++) {
+					int y = floor(pos.y - half.y - E);
+					if (isBlockObstacle(x, y, z)) {
+						vel.y *= 0.0;
+						pos.y = y + 1 + half.y;
+						int f = DEFAULT_FRICTION;
+						vel.x *= std::max(0.0, 1.0 - dt * f);
+						vel.z *= std::max(0.0, 1.0 - dt * f);
+						player->isGrounded = true;
+						broken = true;
+						break;
+					}
+				}
+				if (broken)
+					break;
+			}
+		}
+		if (vel.y > 0.0) {
+			for (int x = floor(pos.x - half.x + E); x <= floor(pos.x + half.x - E); x++) {
+				for (int z = floor(pos.z - half.z + E); z <= floor(pos.z + half.z - E); z++) {
+					int y = floor(pos.y + half.y + E);
+					if (isBlockObstacle(x, y, z)) {
+						vel.y *= 0.0;
+						pos.y = y - half.y - E;
+						break;
+					}
+				}
+			}
+		}
+
+		vel.x *= std::max(0.0, 1.0 - dt * linearDump);
+		vel.z *= std::max(0.0, 1.0 - dt * linearDump);
+
+		pos.x += vel.x * dt;
+		pos.y += vel.y * dt;
+		pos.z += vel.z * dt;
 	}
-	//player.velocity = glm::vec3(0);
+}
+
+bool isBlockInside(int x, int y, int z, Hitbox* hitbox) {
+	glm::vec3& pos = hitbox->pos;
+	glm::vec3& half = hitbox->halfSize;
+	return x >= floor(pos.x - half.x) && x <= floor(pos.x + half.x) &&
+		z >= floor(pos.z - half.z) && z <= floor(pos.z + half.z) &&
+		y >= floor(pos.y - half.y) && y <= floor(pos.y + half.y);
 }
 
 
@@ -80,119 +202,68 @@ glm::vec3 lerpV(glm::vec3 x, glm::vec3 y, float t) {
 	return x * (1.f - t) + y * t;
 }
 
-
 void cameraHandleInput(window* wnd, float deltaTime) {
-	float speed = 2.0f * deltaTime;
+	float speed = DEFAULT_PLAYER_SPEED;
 
-	cam->Position = player.pos+glm::vec3(0,player.size.y/2,0);
+	bool sprint = Input::getKey(SDL_SCANCODE_LSHIFT);
 
-	if (Input::getKey(SDL_SCANCODE_LSHIFT))
-		speed *= 2;
-
-	player.velocity.y += (-9.8 * deltaTime * 0.2f);
-
-	if (player.velocity.y != 0)
-		player.velocity.y = std::clamp(player.velocity.y, -1.0f, 1.0f);
-
-	checkAABB();
-
-	player.velocity = lerpV(player.velocity, glm::vec3(0), 10.0f*deltaTime);
+	if (sprint) {
+		camFov = std::lerp(camFov, 90.0f, deltaTime * 10.0f);
+		speed *= RUN_SPEED_MUL;
+	}
+	else {
+		camFov = std::lerp(camFov, 75.0f, deltaTime * 20.0f);
+	}
 
 	auto dirForward = cam->Orientation;
 	dirForward.y = 0;
 	dirForward = glm::normalize(dirForward);
 	auto dirRight = glm::normalize(glm::cross(cam->Orientation, cam->Up));
-	auto y = player.velocity.y;
-	player.velocity.y = 0;
+
+	int substeps = (int)(deltaTime * 1000);
+	substeps = (substeps <= 0 ? 1 : (substeps > 100 ? 100 : substeps));
+
+	physStep(deltaTime, substeps);
+
+	auto playerPos = player->pos;
+
+	cam->Position = playerPos + glm::vec3(0,player->halfSize.y,0);
+	blockMap->drawCenter = glm::vec3(playerPos.x/CHUNK_W, 0, playerPos.z / CHUNK_D);
+	
+
+	glm::vec3 dir(0, 0, 0);
 	if (Input::getKey(SDL_SCANCODE_A)) {
-		player.velocity +=  -dirRight;
-		player.velocity = glm::normalize(player.velocity) * speed;
+		dir.x -= dirRight.x;
+		dir.z -= dirRight.z;
 	}
-	checkAABB();
 	if (Input::getKey(SDL_SCANCODE_D)) {
-		player.velocity += dirRight;
-		player.velocity = glm::normalize(player.velocity) * speed;
+		dir.x += dirRight.x;
+		dir.z += dirRight.z;
 	}
-	checkAABB();
 	if (Input::getKey(SDL_SCANCODE_W)) {
-		player.velocity += dirForward;
-		player.velocity = glm::normalize(player.velocity) * speed;
+		dir.x += dirForward.x;
+		dir.z += dirForward.z;
+ 	}
+	if (Input::getKey(SDL_SCANCODE_S)) {
+		dir.x -= dirForward.x;
+		dir.z -= dirForward.z;
 	}
-	checkAABB();
-	if (Input::getKey(SDL_SCANCODE_S)){
-		player.velocity += -dirForward;
-		player.velocity = glm::normalize(player.velocity) * speed;
-	}
-	checkAABB();
-
-	player.velocity.y = y;
-
-	if (Input::getKeyDown(SDL_SCANCODE_SPACE))
+	if (Input::getKey(SDL_SCANCODE_SPACE) && player->isGrounded)
 	{
-		player.velocity.y += 25.0f * deltaTime;
+		player->velocity.y += 7;
 	}
-	checkAABB();
-	/*
-
-	auto lastPos = player.pos;
-
-	auto dirForward = cam->Orientation;
-	dirForward.y = 0;
-	dirForward = glm::normalize(dirForward);
+	player->linear_damp = DEFAULT_AIR_DAMPING;
 
 
-	auto dirRight = glm::normalize(glm::cross(cam->Orientation, cam->Up));
+	if (length(dir) > 0.0f) {
+		dir = normalize(dir);
 
-	if (Input::getKey(SDL_SCANCODE_A))
-		player.pos += speed* -dirRight;
-	if (Input::getKey(SDL_SCANCODE_D))
-		player.pos += speed * dirRight;
-	if (Input::getKey(SDL_SCANCODE_W))
-		player.pos += speed *  dirForward;
-	if (Input::getKey(SDL_SCANCODE_S))
-		player.pos += speed * -dirForward;
-	if (Input::getKeyDown(SDL_SCANCODE_SPACE))
-		player.pos += speed * 20.0f * glm::vec3(0, 1, 0);
+		if (!player->isGrounded)
+			player->linear_damp = PLAYER_NOT_ONGROUND_DAMPING;
 
-
-
-	if (checkAABB()) {
-		player.pos = lastPos;
+		player->velocity.x += dir.x * speed * deltaTime * 9;
+		player->velocity.z += dir.z * speed * deltaTime * 9;
 	}
-
-	lastPos = player.pos;
-
-	player.pos.y += -9.8f * deltaTime * 1.0f;
-	if (checkAABB()) {
-		player.pos = lastPos;
-	}
-	*/
-
-
-	/*
-	
-	
-
-	
-
-	*/
-	/*
-	
-	if (Input::getKey(SDL_SCANCODE_LSHIFT))
-		speed *= 2;
-	if (Input::getKey(SDL_SCANCODE_A))
-		cam->moveRight(-speed);
-	if (Input::getKey(SDL_SCANCODE_D))
-		cam->moveRight(speed);
-	if (Input::getKey(SDL_SCANCODE_W))
-		cam->moveForward(speed);
-	if (Input::getKey(SDL_SCANCODE_S))
-		cam->moveForward(-speed);
-	if (Input::getKey(SDL_SCANCODE_SPACE))
-		cam->moveUp(speed);
-	if (Input::getKey(SDL_SCANCODE_LCTRL))
-		cam->moveUp(-speed);
-	*/
 
 	if (Input::getMouseButton(SDL_BUTTON_LMASK)) {
 		if (Input::getMouseButtonDown(SDL_BUTTON_LMASK)) {
@@ -212,14 +283,22 @@ void cameraHandleInput(window* wnd, float deltaTime) {
 	else if (Input::getMouseButtonUp(SDL_BUTTON_LMASK)) {
 		SDL_ShowCursor(true);
 	}
-	cam->updateMatrix(45.0f, 0.1f, 100.0f, (float)windowWidth/windowHeight);
+	cam->updateMatrix(camFov, 0.1f, 100.0f, (float)windowWidth/windowHeight);
 }
+
+const float timeStep = 1.0f / 60.0f;
 
 void winUpdateCallback(window* wnd, float deltaTime) 
 {
 	wnd->getSize(&windowWidth, &windowHeight);
 
 	_scene->update();
+
+	//cam->Position = glm::vec3(_transform.position.x, _transform.position.y + 0.5f, _transform.position.z);
+
+	//playerBody->SetLinearVelocity(q3Vec3(0, 1, 0));
+
+	//LOG::info("aa:{}", playerBody->GetLinearVelocity().y);
 
 	ImGuiIO& io = ImGui::GetIO();
 	if (!io.WantCaptureMouse) {
@@ -263,13 +342,16 @@ void winSDLCallback(window* wnd, SDL_Event event) {
 void winRenderCallback(window* wnd, float deltaTime) 
 {
 	clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	clearColor(229.0/255,204.0/255,214.0/255,1);
+	//clearColor(229.0/255,204.0/255,214.0/255,1);
+	clearColor(75/255.0,159/255.0,220/255.0,1);
 	setViewport(0, 0, wnd->getWidth(), wnd->getHeight());
 	
 	//tex->bind();
 	sh->use();
 	sh->setMat4("camMatrix", cam->Matrix);
 	sh->setMat4("model", model);
+	sh->setVec4("lightColor", glm::vec4(1.0,0.5,0.4,1.0));
+	sh->setVec3("camPos", cam->Position);
 
 	//_mesh->draw();
 	//chunk->draw();
@@ -306,7 +388,7 @@ int main(int argc, char* args[]) {
 	SDL_GLContext glContext = SDL_GL_CreateContext(win.getNativeWindow());
 	application::setGLContext(glContext);
 	MKGraphics::loadGL(reinterpret_cast<GLADloadfunc>(SDL_GL_GetProcAddress));
-	
+
 	MKEngine::utilsExample1();
 	MKGraphics::enable(GL_DEPTH_TEST);
 	MKGraphics::enable(GL_BLEND);
@@ -315,18 +397,18 @@ int main(int argc, char* args[]) {
 	std::string resDir = solutionDir + "resources\\";
 
 	sh = new shader(
-		(resDir+ "shaders\\simpleShader.vert").c_str(),
-		(resDir+ "shaders\\simpleShader.frag").c_str());
+		(resDir + "shaders\\diffuse.vert").c_str(),
+		(resDir + "shaders\\diffuse.frag").c_str());
 
-	tex = new texture((resDir+"textures\\common\\dirt.png").c_str(), "diffuse", 0, GL_UNSIGNED_BYTE);
-	
-	cam = new camera(glm::vec3(3,11,3));
+	tex = new texture((resDir + "textures\\common\\dirt.png").c_str(), "diffuse", 0, GL_UNSIGNED_BYTE);
+
+	cam = new camera(glm::vec3(3, 11, 3));
 	
 
 	MKGame::blocks::setTex(new texture((resDir + "textures\\blocks.png").c_str(), "diffuse", 0, GL_UNSIGNED_BYTE));
 	MKGame::blocks::registerData(new MKGame::dirt());
 	MKGame::blocks::registerData(new MKGame::grass());
-	
+
 	_scene = new scene();
 
 	_scene->cam = cam;
@@ -335,16 +417,17 @@ int main(int argc, char* args[]) {
 	blockMap = new MKGame::blockMapComponent(blockMapEnt);
 	blockMapEnt->components.push_back(blockMap);
 
-	
+	player = new Hitbox(glm::vec3(3, 11, 3), glm::vec3(0.2f, 0.9f, 0.2f));
+
 	float counter = 0;
 	float rot = 45.0f;
 
 	const siv::PerlinNoise::seed_type seed = 12345u;
 	const siv::PerlinNoise perlin{ seed };
 
-	for (size_t i = 0; i < 128; i++)
+	for (int i = -128; i < 128; i++)
 	{
-		for (size_t j = 0; j < 128; j++)
+		for (int j = -128; j < 128; j++)
 		{
 			const double noise = perlin.octave2D_01((i * 0.01), (j * 0.01), 16, 0.6) * 10;
 
@@ -361,11 +444,40 @@ int main(int argc, char* args[]) {
 			}
 		}
 	}
+	/*
 	
+	{
+
+		auto _mesh = blockMap->_chunk->_mesh;
+
+		TriangleVertexArray* triangleArray = new TriangleVertexArray(
+			_mesh->vertices.size(),
+			_mesh->vertices.data(),
+			sizeof(vertex),
+			_mesh->indices.size(),
+			_mesh->indices.data(),
+			sizeof(GLuint),
+			TriangleVertexArray::VertexDataType::VERTEX_FLOAT_TYPE,
+			TriangleVertexArray::IndexDataType::INDEX_INTEGER_TYPE);
+
+		TriangleMesh* triangleMesh = physicsCommon.createTriangleMesh();
+		triangleMesh->addSubpart(triangleArray);
+		ConcaveMeshShape* concaveMesh = physicsCommon.createConcaveMeshShape(triangleMesh);
+
+		Vector3 position(0.0, 0, 0.0);
+		Quaternion orientation = Quaternion::identity();
+		Transform transform(position, orientation);
+
+		CollisionBody* _body;
+		_body = world->createCollisionBody(transform);
+
+	}
+
+	*/
 
 	//chunk->updateBitmasks();
 	//chunk->generateMesh();
-	
+
 	auto glsl_version = "#version 460";
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();

@@ -34,15 +34,12 @@ namespace MKGame {
 		virtual glm::vec2 getTextureOffset(MKGame::CUBE_FACE face);
 	};
 	class dirt : public block {
-		//using block::block;
 	public:
 		 glm::vec2 getTextureOffset(MKGame::CUBE_FACE face) ;
 	};
 
 	class grass : public block {
-		//using block::block;
 	public:
 		 glm::vec2 getTextureOffset(MKGame::CUBE_FACE face);
-
 	};
 }
