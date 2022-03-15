@@ -14,4 +14,11 @@
 
 namespace MKEngine {
 	MK_ENGINE_API void utilsExample1();
+
+	/*
+	
+glm::vec3 lerpV(glm::vec3 x, glm::vec3 y, float t) {
+	return x * (1.f - t) + y * t;
+}
+	*/
 }

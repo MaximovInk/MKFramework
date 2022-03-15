@@ -2,10 +2,10 @@
 <Project>
   <ProjectOutputs>
     <ProjectOutput>
-      <FullPath>C:\Users\MInk\source\repos\MKFramework\bin\x64\Debug\MKGraphics.dll</FullPath>
+      <FullPath>C:\Users\Danila\Documents\GitHub\MKFramework\bin\x64\Debug\MKGraphics.dll</FullPath>
     </ProjectOutput>
     <ProjectOutput>
-      <FullPath>C:\Users\MInk\source\repos\MKFramework\bin\x64\Debug\MKCore.dll</FullPath>
+      <FullPath>C:\Users\Danila\Documents\GitHub\MKFramework\bin\x64\Debug\MKCore.dll</FullPath>
     </ProjectOutput>
   </ProjectOutputs>
   <ContentFiles />

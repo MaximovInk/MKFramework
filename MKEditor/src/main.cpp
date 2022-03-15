@@ -22,6 +22,7 @@
 #include "minecraft/chunk.h"
 #include "minecraft/blocks.h"
 #include "perlinNoise/PerlinNoise.hpp"
+#include "physics/physics.h"
 
 using namespace MKEngine;
 using namespace MKGraphics;
@@ -41,166 +42,24 @@ int windowHeight;
 
 void SetupImGuiStyle(bool bStyleDark_, float alpha_);
 
-std::string solutionDir = "C:\\Users\\Mink\\source\\repos\\MKFramework\\";
+//std::string solutionDir = "C:\\Users\\Mink\\source\\repos\\MKFramework\\";
+std::string solutionDir = "C:\\Users\\Danila\\Documents\\Github\\MKFramework\\";
 
 int mouseLockPosX;
 int mouseLockPosY;
 
-class Hitbox {
-public:
-	glm::vec3 pos;
-	glm::vec3 halfSize;
-	glm::vec3 velocity;
-	float linear_damp;
-	bool isGrounded;
-
-	Hitbox(glm::vec3 pos, glm::vec3 halfSize) 
-		: pos(pos), halfSize(halfSize), velocity(0.0f, 0.0f, 0.0f), linear_damp(0.1f)
-	{
-
-	}
-};
-
-#define E 0.03
-#define DEFAULT_FRICTION 10.0
-#define DEFAULT_AIR_DAMPING 0.1f
-#define PLAYER_NOT_ONGROUND_DAMPING 10.0f
-#define RUN_SPEED_MUL 1.5f
-#define DEFAULT_PLAYER_SPEED 4.0f
-
-
-const glm::vec3 gravity = glm::vec3(0,-19.6f,0);
-float gravityScale = 1.0;
-
 float camFov = 75.0f;
 
-Hitbox* player;
 
-bool isBlockObstacle(int x, int y, int z) {
-	return blockMap->getTile(glm::ivec3(x, y, z))!= 0;
-}
+#define RUN_SPEED_MUL 1.5f
+#define DEFAULT_PLAYER_SPEED 4.0f
+#define DEFAULT_AIR_DAMPING 0.1f
+#define PLAYER_NOT_ONGROUND_DAMPING 10.0f
 
-void physStep(float deltaTime, unsigned physSubsteps) {
-	player->isGrounded = false;
-	for (unsigned i = 0; i < physSubsteps; i++)
-	{
-		float dt = deltaTime / (float)physSubsteps;
-		float linearDump = player->linear_damp;
-		glm::vec3& pos = player->pos;
-		glm::vec3& half = player->halfSize;
-		glm::vec3& vel = player->velocity;
-		vel.x += gravity.x * dt * gravityScale;
-		vel.y += gravity.y * dt * gravityScale;
-		vel.z += gravity.z * dt * gravityScale;
+MKGame::Hitbox* player;
 
-		float px = pos.x;
-		float pz = pos.z;
-
-		if (vel.x < 0.0) {
-			for (int y = floor(pos.y - half.y + E); y <= floor(pos.y + half.y - E); y++) {
-				for (int z = floor(pos.z - half.z + E); z <= floor(pos.z + half.z - E); z++) {
-					int x = floor(pos.x - half.x - E);
-					if (isBlockObstacle(x, y, z)) {
-						vel.x *= 0.0;
-						pos.x = x + 1 + half.x + E;
-						break;
-					}
-				}
-			}
-		}
-		if (vel.x > 0.0) {
-			for (int y = floor(pos.y - half.y + E); y <= floor(pos.y + half.y - E); y++) {
-				for (int z = floor(pos.z - half.z + E); z <= floor(pos.z + half.z - E); z++) {
-					int x = floor(pos.x + half.x + E);
-					if (isBlockObstacle(x, y, z)) {
-						vel.x *= 0.0;
-						pos.x = x - half.x - E;
-						break;
-					}
-				}
-			}
-		}
-
-		if (vel.z < 0.0) {
-			for (int y = floor(pos.y - half.y + E); y <= floor(pos.y + half.y - E); y++) {
-				for (int x = floor(pos.x - half.x + E); x <= floor(pos.x + half.x - E); x++) {
-					int z = floor(pos.z - half.z - E);
-					if (isBlockObstacle(x, y, z)) {
-						vel.z *= 0.0;
-						pos.z = z + 1 + half.z + E;
-						break;
-					}
-				}
-			}
-		}
-
-		if (vel.z > 0.0) {
-			for (int y = floor(pos.y - half.y + E); y <= floor(pos.y + half.y - E); y++) {
-				for (int x = floor(pos.x - half.x + E); x <= floor(pos.x + half.x - E); x++) {
-					int z = floor(pos.z + half.z + E);
-					if (isBlockObstacle(x, y, z)) {
-						vel.z *= 0.0;
-						pos.z = z - half.z - E;
-						break;
-					}
-				}
-			}
-		}
-
-		if (vel.y < 0.0) {
-			for (int x = floor(pos.x - half.x + E); x <= floor(pos.x + half.x - E); x++) {
-				bool broken = false;
-				for (int z = floor(pos.z - half.z + E); z <= floor(pos.z + half.z - E); z++) {
-					int y = floor(pos.y - half.y - E);
-					if (isBlockObstacle(x, y, z)) {
-						vel.y *= 0.0;
-						pos.y = y + 1 + half.y;
-						int f = DEFAULT_FRICTION;
-						vel.x *= std::max(0.0, 1.0 - dt * f);
-						vel.z *= std::max(0.0, 1.0 - dt * f);
-						player->isGrounded = true;
-						broken = true;
-						break;
-					}
-				}
-				if (broken)
-					break;
-			}
-		}
-		if (vel.y > 0.0) {
-			for (int x = floor(pos.x - half.x + E); x <= floor(pos.x + half.x - E); x++) {
-				for (int z = floor(pos.z - half.z + E); z <= floor(pos.z + half.z - E); z++) {
-					int y = floor(pos.y + half.y + E);
-					if (isBlockObstacle(x, y, z)) {
-						vel.y *= 0.0;
-						pos.y = y - half.y - E;
-						break;
-					}
-				}
-			}
-		}
-
-		vel.x *= std::max(0.0, 1.0 - dt * linearDump);
-		vel.z *= std::max(0.0, 1.0 - dt * linearDump);
-
-		pos.x += vel.x * dt;
-		pos.y += vel.y * dt;
-		pos.z += vel.z * dt;
-	}
-}
-
-bool isBlockInside(int x, int y, int z, Hitbox* hitbox) {
-	glm::vec3& pos = hitbox->pos;
-	glm::vec3& half = hitbox->halfSize;
-	return x >= floor(pos.x - half.x) && x <= floor(pos.x + half.x) &&
-		z >= floor(pos.z - half.z) && z <= floor(pos.z + half.z) &&
-		y >= floor(pos.y - half.y) && y <= floor(pos.y + half.y);
-}
-
-
-glm::vec3 lerpV(glm::vec3 x, glm::vec3 y, float t) {
-	return x * (1.f - t) + y * t;
-}
+cubeMap* sky;
+shader* skyboxShader;
 
 void cameraHandleInput(window* wnd, float deltaTime) {
 	float speed = DEFAULT_PLAYER_SPEED;
@@ -223,7 +82,7 @@ void cameraHandleInput(window* wnd, float deltaTime) {
 	int substeps = (int)(deltaTime * 1000);
 	substeps = (substeps <= 0 ? 1 : (substeps > 100 ? 100 : substeps));
 
-	physStep(deltaTime, substeps);
+	MKGame::physStep(deltaTime, substeps, blockMap, player);
 
 	auto playerPos = player->pos;
 
@@ -294,12 +153,6 @@ void winUpdateCallback(window* wnd, float deltaTime)
 
 	_scene->update();
 
-	//cam->Position = glm::vec3(_transform.position.x, _transform.position.y + 0.5f, _transform.position.z);
-
-	//playerBody->SetLinearVelocity(q3Vec3(0, 1, 0));
-
-	//LOG::info("aa:{}", playerBody->GetLinearVelocity().y);
-
 	ImGuiIO& io = ImGui::GetIO();
 	if (!io.WantCaptureMouse) {
 		cameraHandleInput(wnd, deltaTime);
@@ -335,27 +188,30 @@ void drawControls() {
 
 	ImGui::End();
 }
+
 void winSDLCallback(window* wnd, SDL_Event event) {
 	ImGui_ImplSDL2_ProcessEvent(&event);
 }
 
+
 void winRenderCallback(window* wnd, float deltaTime) 
 {
 	clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	//clearColor(229.0/255,204.0/255,214.0/255,1);
 	clearColor(75/255.0,159/255.0,220/255.0,1);
 	setViewport(0, 0, wnd->getWidth(), wnd->getHeight());
 	
-	//tex->bind();
 	sh->use();
 	sh->setMat4("camMatrix", cam->Matrix);
 	sh->setMat4("model", model);
 	sh->setVec4("lightColor", glm::vec4(1.0,0.5,0.4,1.0));
 	sh->setVec3("camPos", cam->Position);
 
-	//_mesh->draw();
-	//chunk->draw();
 	_scene->render();
+
+	MKEngine::Utils::drawQuad(glm::vec3(3,9,2), glm::vec3(0,0,0), glm::vec2(1, 1), glm::vec4(1, 0, 0, 1), cam);
+	MKEngine::Utils::drawLine(player->pos, glm::vec3(3, 9, 2), glm::vec4(0, 1, 0, 1), cam);
+
+	sky->draw(*skyboxShader, *cam);
 	
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplSDL2_NewFrame(wnd->getNativeWindow());
@@ -417,7 +273,7 @@ int main(int argc, char* args[]) {
 	blockMap = new MKGame::blockMapComponent(blockMapEnt);
 	blockMapEnt->components.push_back(blockMap);
 
-	player = new Hitbox(glm::vec3(3, 11, 3), glm::vec3(0.2f, 0.9f, 0.2f));
+	player = new MKGame::Hitbox(glm::vec3(3, 11, 3), glm::vec3(0.2f, 0.9f, 0.2f));
 
 	float counter = 0;
 	float rot = 45.0f;
@@ -444,39 +300,22 @@ int main(int argc, char* args[]) {
 			}
 		}
 	}
-	/*
-	
+
+	std::vector<std::string> faces
 	{
+			resDir+"textures\\skybox\\Cold Sunset\\left+x.png",
+			resDir+"textures\\skybox\\Cold Sunset\\right-x.png",
+			resDir+"textures\\skybox\\Cold Sunset\\up+y.png",
+			resDir+"textures\\skybox\\Cold Sunset\\down-y.png",
+			resDir+"textures\\skybox\\Cold Sunset\\front+z.png",
+			resDir+"textures\\skybox\\Cold Sunset\\back-z.png"
+	};
 
-		auto _mesh = blockMap->_chunk->_mesh;
-
-		TriangleVertexArray* triangleArray = new TriangleVertexArray(
-			_mesh->vertices.size(),
-			_mesh->vertices.data(),
-			sizeof(vertex),
-			_mesh->indices.size(),
-			_mesh->indices.data(),
-			sizeof(GLuint),
-			TriangleVertexArray::VertexDataType::VERTEX_FLOAT_TYPE,
-			TriangleVertexArray::IndexDataType::INDEX_INTEGER_TYPE);
-
-		TriangleMesh* triangleMesh = physicsCommon.createTriangleMesh();
-		triangleMesh->addSubpart(triangleArray);
-		ConcaveMeshShape* concaveMesh = physicsCommon.createConcaveMeshShape(triangleMesh);
-
-		Vector3 position(0.0, 0, 0.0);
-		Quaternion orientation = Quaternion::identity();
-		Transform transform(position, orientation);
-
-		CollisionBody* _body;
-		_body = world->createCollisionBody(transform);
-
-	}
-
-	*/
-
-	//chunk->updateBitmasks();
-	//chunk->generateMesh();
+	sky = new cubeMap(faces);
+	skyboxShader = new shader((resDir+ "shaders\\skybox.vert").c_str(), (resDir+ "shaders\\skybox.frag").c_str());
+	skyboxShader->use();
+	skyboxShader->setInt("skybox", 0);
+	skyboxShader->useDefault();
 
 	auto glsl_version = "#version 460";
 	IMGUI_CHECKVERSION();

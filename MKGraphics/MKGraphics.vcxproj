@@ -153,7 +153,10 @@
   <ItemGroup>
     <ClInclude Include="src\API.h" />
     <ClInclude Include="src\camera.h" />
+    <ClInclude Include="src\cubeMap.h" />
     <ClInclude Include="src\EBO.h" />
+    <ClInclude Include="src\FBO.h" />
+    <ClInclude Include="src\gBuffer.h" />
     <ClInclude Include="src\graphicsUtils.h" />
     <ClInclude Include="src\mesh.h" />
     <ClInclude Include="src\MKGraphics.h" />
@@ -167,7 +170,9 @@
   <ItemGroup>
     <ClCompile Include="..\third_party\include\glad\gl.c" />
     <ClCompile Include="src\camera.cpp" />
+    <ClCompile Include="src\cubeMap.cpp" />
     <ClCompile Include="src\EBO.cpp" />
+    <ClCompile Include="src\FBO.cpp" />
     <ClCompile Include="src\graphicsUtils.cpp" />
     <ClCompile Include="src\mesh.cpp" />
     <ClCompile Include="src\MKGraphics.cpp" />

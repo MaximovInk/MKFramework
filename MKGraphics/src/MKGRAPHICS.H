@@ -7,6 +7,7 @@
 #include "shader.h"
 #include "texture.h"
 #include "camera.h"
+#include "cubeMap.h"
 
 namespace MKGraphics {
 	enum Axis {
