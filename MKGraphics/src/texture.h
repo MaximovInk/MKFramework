@@ -8,7 +8,7 @@
 class MK_ENGINE_API texture
 {
 public:
-	
+	texture(const char* image);
 
 	texture(int width, int height, const void* pixels, GLenum format, GLenum pixelType);
 
@@ -23,6 +23,13 @@ public:
 	void bind();
 	void unbind();
 	void destroy();
+
+	void setType(const char* type);
+	void setSlot(GLenum slot);
+	void setFilter(GLint mag, GLint min);
+	void setWrap(GLint s, GLint t);
+	void generateMipmap();
+	
 
 private:
 	GLuint ID;

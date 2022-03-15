@@ -67,6 +67,7 @@ vec4 direcLight()
 	vec3 normal = normalize(Normal);
 	vec3 lightDirection = normalize(vec3(-0.6f, 0.65f, 0.4f));
 	float diffuse = max(dot(normal, lightDirection), 0.0f);
+	
 
 	// specular lighting
 	float specularLight = 0.1f;

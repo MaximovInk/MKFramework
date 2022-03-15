@@ -1,2 +1,4 @@
 ﻿  MKUtils.cpp
-  MKUtils.vcxproj -> C:\Users\Danila\Documents\GitHub\MKFramework\bin\x64\Debug\MKUtils.dll
+  LINK : не найден или не выполнена сборка C:\Users\MInk\source\repos\MKFramework\bin\x64\Debug\MKUtils.dll при последней инкрементной компоновке; выполняется полная компоновка
+     Создается библиотека C:\Users\MInk\source\repos\MKFramework\bin\x64\Debug\MKUtils.lib и объект C:\Users\MInk\source\repos\MKFramework\bin\x64\Debug\MKUtils.exp
+  MKUtils.vcxproj -> C:\Users\MInk\source\repos\MKFramework\bin\x64\Debug\MKUtils.dll

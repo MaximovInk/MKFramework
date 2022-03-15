@@ -9,6 +9,36 @@ shader* texShader;
 
 std::string solutionDir = "C:\\Users\\Danila\\Documents\\Github\\MKFramework\\";
 
+std::string baseShaderFragCol = "#version 330 core\n\
+out vec4 FragColor;\n\
+uniform vec4 color;\n\
+void main()\n\
+{\n\
+	FragColor = color;\n\
+}; ";
+std::string baseShaderFragTex = "#version 330 core\n\
+out vec4 FragColor;\n\
+uniform sampler2D diffuse0;\n\
+in vec2 texCoords;\n\
+void main()\n\
+{\n\
+	vec3 color = texture(diffuse0, texCoords).rgb;\n\
+	FragColor = vec4(color, 1.0f);\n\
+};";
+std::string baseShaderVert = "#version 330 core\n\
+layout(location = 0) in vec3 aPos;\n\
+layout(location = 1) in vec3 aNormal;\n\
+layout(location = 2) in vec3 aColor;\n\
+layout(location = 3) in vec2 aTex;\n\
+out vec2 texCoords;\n\
+uniform mat4 camMatrix; \n\
+uniform mat4 model;\n\
+void main()\n\
+{\n\
+	texCoords = aTex; \n\
+	gl_Position = camMatrix * model * vec4(aPos, 1.0); \n\
+}";
+
 MKEngine::mesh* MKEngine::Utils::makeQuad(glm::vec2 min,glm::vec2 max, MKGraphics::Axis axis)
 {
 	glm::vec3 pos0;
@@ -106,15 +136,14 @@ void MKEngine::Utils::setLineWidth(float width)
 
 void checkInit() {
 	if (quad == nullptr) {
-		quad = MKEngine::Utils::makeQuad(glm::vec2(0,0), glm::vec2(1,1), MKGraphics::AXIS_Z);
+		quad = MKEngine::Utils::makeQuad(glm::vec2(0,0), glm::vec2(1,1), MKGraphics::AXIS_Y);
 	}
-	std::string resDir = solutionDir + "resources\\shaders\\";
 
 	if (colorShader == nullptr) {
-		colorShader = new shader((resDir+"baseShader.vert").c_str(), (resDir + "baseShader.frag").c_str());
+		colorShader = new shader(baseShaderVert.c_str(), baseShaderFragCol.c_str());
 	}
 	if (texShader == nullptr) {
-		texShader = new shader((resDir + "baseShader.vert").c_str(), (resDir + "texShader.frag").c_str());
+		texShader = new shader(baseShaderVert.c_str(), baseShaderFragTex.c_str());
 	}
 }
 
@@ -123,38 +152,17 @@ void MKEngine::Utils::drawLine(glm::vec3 pos1, glm::vec3 pos2, glm::vec4 color,c
 	checkInit();
 
 	auto length = glm::length(pos2 - pos1);
-	LOG::info(length);
 	
-	auto dir = glm::normalize(pos2 - pos1);
+	auto dir = glm::normalize(pos1 - pos2);
 	
 	auto camMatrix = cam->Matrix;
 	auto model = glm::mat4(1.0);
-	/*const glm::mat4 transformX = glm::rotate(glm::mat4(1.0f),
-		dir.x,
-		glm::vec3(1.0f, 0.0f, 0.0f));
-	const glm::mat4 transformY = glm::rotate(glm::mat4(1.0f),
-		dir.y,
-		glm::vec3(0.0f, 1.0f, 0.0f));
-	const glm::mat4 transformZ = glm::rotate(glm::mat4(1.0f),
-		dir.z,
-		glm::vec3(0.0f, 0.0f, 1.0f));
 
-	// Y * X * Z
-	const glm::mat4 rotationMatrix = transformY * transformX * transformZ;
-	*/
+	glm::vec3 right = glm::cross(glm::normalize(glm::vec3(0,1,0)), dir);
+	glm::vec3 up = glm::cross(dir, right);
+	//glm::vec3 up = glm::cross(pos1, pos2);
 
-	glm::vec3 up(0, 1, 0);
-	glm::vec3 z_axis = glm::normalize(dir);
-	glm::vec3 x_axis = glm::normalize(glm::cross(up, z_axis));
-	glm::vec3 y_axis = glm::normalize(glm::cross(z_axis, x_axis));
-
-	glm::mat4 rotationMatrix(
-		x_axis.x,x_axis.y,x_axis.z,0,
-		y_axis.x, y_axis.y, y_axis.z, 0,
-		z_axis.x, z_axis.y, z_axis.z, 0,
-		0,0,0,1
-	);
-
+	const glm::mat4 rotationMatrix = glm::lookAt(glm::vec3(0,0,0), dir, up);
 
 	model = glm::translate(glm::mat4(1.0f), pos1) * rotationMatrix * glm::scale(glm::mat4(1.0f), glm::vec3(lineWidth, 1.0, length));
 

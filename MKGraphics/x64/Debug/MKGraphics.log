@@ -1,28 +1,27 @@
 ﻿  graphicsUtils.cpp
-C:\Users\Danila\Documents\GitHub\MKFramework\MKGraphics\src\mesh.h(12,24): warning C4251: 'MKEngine::mesh::vertices': class 'std::vector<vertex,std::allocator<vertex>>' needs to have dll-interface to be used by clients of class 'MKEngine::mesh'
-C:\Users\Danila\Documents\GitHub\MKFramework\MKGraphics\src\VBO.h(12): message : see declaration of 'std::vector<vertex,std::allocator<vertex>>'
-C:\Users\Danila\Documents\GitHub\MKFramework\MKGraphics\src\mesh.h(13,24): warning C4251: 'MKEngine::mesh::indices': class 'std::vector<GLuint,std::allocator<GLuint>>' needs to have dll-interface to be used by clients of class 'MKEngine::mesh'
-C:\Users\Danila\Documents\GitHub\MKFramework\MKGraphics\src\EBO.h(11): message : see declaration of 'std::vector<GLuint,std::allocator<GLuint>>'
-C:\Users\Danila\Documents\GitHub\MKFramework\MKGraphics\src\mesh.h(15,19): warning C4251: 'MKEngine::mesh::VAO': class 'MKGraphics::VAO' needs to have dll-interface to be used by clients of class 'MKEngine::mesh'
-C:\Users\Danila\Documents\GitHub\MKFramework\MKGraphics\src\VAO.h(7): message : see declaration of 'MKGraphics::VAO'
-C:\Users\Danila\Documents\GitHub\MKFramework\MKGraphics\src\camera.h(14,12): warning C4251: 'camera::Position': struct 'glm::vec<3,float,glm::packed_highp>' needs to have dll-interface to be used by clients of class 'camera'
-C:\Users\Danila\Documents\GitHub\MKFramework\third_party\include\glm\fwd.hpp(420): message : see declaration of 'glm::vec<3,float,glm::packed_highp>'
-C:\Users\Danila\Documents\GitHub\MKFramework\MKGraphics\src\camera.h(15,12): warning C4251: 'camera::Orientation': struct 'glm::vec<3,float,glm::packed_highp>' needs to have dll-interface to be used by clients of class 'camera'
-C:\Users\Danila\Documents\GitHub\MKFramework\third_party\include\glm\fwd.hpp(420): message : see declaration of 'glm::vec<3,float,glm::packed_highp>'
-C:\Users\Danila\Documents\GitHub\MKFramework\MKGraphics\src\camera.h(16,12): warning C4251: 'camera::Up': struct 'glm::vec<3,float,glm::packed_highp>' needs to have dll-interface to be used by clients of class 'camera'
-C:\Users\Danila\Documents\GitHub\MKFramework\third_party\include\glm\fwd.hpp(420): message : see declaration of 'glm::vec<3,float,glm::packed_highp>'
-C:\Users\Danila\Documents\GitHub\MKFramework\MKGraphics\src\camera.h(17,12): warning C4251: 'camera::Matrix': struct 'glm::mat<4,4,glm::f32,glm::packed_highp>' needs to have dll-interface to be used by clients of class 'camera'
-C:\Users\Danila\Documents\GitHub\MKFramework\third_party\include\glm\fwd.hpp(520): message : see declaration of 'glm::mat<4,4,glm::f32,glm::packed_highp>'
-C:\Users\Danila\Documents\GitHub\MKFramework\MKGraphics\src\camera.h(37,12): warning C4251: 'camera::view': struct 'glm::mat<4,4,glm::f32,glm::packed_highp>' needs to have dll-interface to be used by clients of class 'camera'
-C:\Users\Danila\Documents\GitHub\MKFramework\third_party\include\glm\fwd.hpp(520): message : see declaration of 'glm::mat<4,4,glm::f32,glm::packed_highp>'
-C:\Users\Danila\Documents\GitHub\MKFramework\MKGraphics\src\camera.h(38,12): warning C4251: 'camera::projection': struct 'glm::mat<4,4,glm::f32,glm::packed_highp>' needs to have dll-interface to be used by clients of class 'camera'
-C:\Users\Danila\Documents\GitHub\MKFramework\third_party\include\glm\fwd.hpp(520): message : see declaration of 'glm::mat<4,4,glm::f32,glm::packed_highp>'
-C:\Users\Danila\Documents\GitHub\MKFramework\MKGraphics\src\model.h(28,31): warning C4251: 'model::meshes': class 'std::vector<MKEngine::mesh,std::allocator<MKEngine::mesh>>' needs to have dll-interface to be used by clients of class 'model'
-C:\Users\Danila\Documents\GitHub\MKFramework\MKGraphics\src\model.h(28): message : see declaration of 'std::vector<MKEngine::mesh,std::allocator<MKEngine::mesh>>'
-C:\Users\Danila\Documents\GitHub\MKFramework\MKGraphics\src\model.h(29,14): warning C4251: 'model::directory': class 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>' needs to have dll-interface to be used by clients of class 'model'
-C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.30.30705\include\xstring(4920): message : see declaration of 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>'
-C:\Users\Danila\Documents\GitHub\MKFramework\MKGraphics\src\texture.h(30,14): warning C4251: 'texture::path': class 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>' needs to have dll-interface to be used by clients of class 'texture'
-C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.30.30705\include\xstring(4920): message : see declaration of 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>'
-C:\Users\Danila\Documents\GitHub\MKFramework\MKGraphics\src\graphicsUtils.cpp(88,20): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-     Creating library C:\Users\Danila\Documents\GitHub\MKFramework\bin\x64\Debug\MKGraphics.lib and object C:\Users\Danila\Documents\GitHub\MKFramework\bin\x64\Debug\MKGraphics.exp
-  MKGraphics.vcxproj -> C:\Users\Danila\Documents\GitHub\MKFramework\bin\x64\Debug\MKGraphics.dll
+C:\Users\MInk\source\repos\MKFramework\MKGraphics\src\mesh.h(12,24): warning C4251: MKEngine::mesh::vertices: class "std::vector<vertex,std::allocator<vertex>>" должен иметь dll-интерфейс для использования клиентами class "MKEngine::mesh"
+C:\Users\MInk\source\repos\MKFramework\MKGraphics\src\VBO.h(12): message : см. объявление "std::vector<vertex,std::allocator<vertex>>"
+C:\Users\MInk\source\repos\MKFramework\MKGraphics\src\mesh.h(13,24): warning C4251: MKEngine::mesh::indices: class "std::vector<GLuint,std::allocator<GLuint>>" должен иметь dll-интерфейс для использования клиентами class "MKEngine::mesh"
+C:\Users\MInk\source\repos\MKFramework\MKGraphics\src\EBO.h(11): message : см. объявление "std::vector<GLuint,std::allocator<GLuint>>"
+C:\Users\MInk\source\repos\MKFramework\MKGraphics\src\mesh.h(15,19): warning C4251: MKEngine::mesh::VAO: class "MKGraphics::VAO" должен иметь dll-интерфейс для использования клиентами class "MKEngine::mesh"
+C:\Users\MInk\source\repos\MKFramework\MKGraphics\src\VAO.h(7): message : см. объявление "MKGraphics::VAO"
+C:\Users\MInk\source\repos\MKFramework\MKGraphics\src\camera.h(14,12): warning C4251: camera::Position: struct "glm::vec<3,float,glm::packed_highp>" должен иметь dll-интерфейс для использования клиентами class "camera"
+C:\Users\MInk\source\repos\MKFramework\third_party\include\glm\fwd.hpp(420): message : см. объявление "glm::vec<3,float,glm::packed_highp>"
+C:\Users\MInk\source\repos\MKFramework\MKGraphics\src\camera.h(15,12): warning C4251: camera::Orientation: struct "glm::vec<3,float,glm::packed_highp>" должен иметь dll-интерфейс для использования клиентами class "camera"
+C:\Users\MInk\source\repos\MKFramework\third_party\include\glm\fwd.hpp(420): message : см. объявление "glm::vec<3,float,glm::packed_highp>"
+C:\Users\MInk\source\repos\MKFramework\MKGraphics\src\camera.h(16,12): warning C4251: camera::Up: struct "glm::vec<3,float,glm::packed_highp>" должен иметь dll-интерфейс для использования клиентами class "camera"
+C:\Users\MInk\source\repos\MKFramework\third_party\include\glm\fwd.hpp(420): message : см. объявление "glm::vec<3,float,glm::packed_highp>"
+C:\Users\MInk\source\repos\MKFramework\MKGraphics\src\camera.h(17,12): warning C4251: camera::Matrix: struct "glm::mat<4,4,glm::f32,glm::packed_highp>" должен иметь dll-интерфейс для использования клиентами class "camera"
+C:\Users\MInk\source\repos\MKFramework\third_party\include\glm\fwd.hpp(520): message : см. объявление "glm::mat<4,4,glm::f32,glm::packed_highp>"
+C:\Users\MInk\source\repos\MKFramework\MKGraphics\src\camera.h(37,12): warning C4251: camera::view: struct "glm::mat<4,4,glm::f32,glm::packed_highp>" должен иметь dll-интерфейс для использования клиентами class "camera"
+C:\Users\MInk\source\repos\MKFramework\third_party\include\glm\fwd.hpp(520): message : см. объявление "glm::mat<4,4,glm::f32,glm::packed_highp>"
+C:\Users\MInk\source\repos\MKFramework\MKGraphics\src\camera.h(38,12): warning C4251: camera::projection: struct "glm::mat<4,4,glm::f32,glm::packed_highp>" должен иметь dll-интерфейс для использования клиентами class "camera"
+C:\Users\MInk\source\repos\MKFramework\third_party\include\glm\fwd.hpp(520): message : см. объявление "glm::mat<4,4,glm::f32,glm::packed_highp>"
+C:\Users\MInk\source\repos\MKFramework\MKGraphics\src\model.h(28,31): warning C4251: model::meshes: class "std::vector<MKEngine::mesh,std::allocator<MKEngine::mesh>>" должен иметь dll-интерфейс для использования клиентами class "model"
+C:\Users\MInk\source\repos\MKFramework\MKGraphics\src\model.h(28): message : см. объявление "std::vector<MKEngine::mesh,std::allocator<MKEngine::mesh>>"
+C:\Users\MInk\source\repos\MKFramework\MKGraphics\src\model.h(29,14): warning C4251: model::directory: class "std::basic_string<char,std::char_traits<char>,std::allocator<char>>" должен иметь dll-интерфейс для использования клиентами class "model"
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.30.30705\include\xstring(4920): message : см. объявление "std::basic_string<char,std::char_traits<char>,std::allocator<char>>"
+C:\Users\MInk\source\repos\MKFramework\MKGraphics\src\texture.h(37,14): warning C4251: texture::path: class "std::basic_string<char,std::char_traits<char>,std::allocator<char>>" должен иметь dll-интерфейс для использования клиентами class "texture"
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.30.30705\include\xstring(4920): message : см. объявление "std::basic_string<char,std::char_traits<char>,std::allocator<char>>"
+C:\Users\MInk\source\repos\MKFramework\MKGraphics\src\graphicsUtils.cpp(118,20): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
+  MKGraphics.vcxproj -> C:\Users\MInk\source\repos\MKFramework\bin\x64\Debug\MKGraphics.dll

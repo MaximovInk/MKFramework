@@ -1,3 +1,5 @@
+
+
 #include "iostream"
 #include <format>
 
@@ -12,6 +14,7 @@
 #include "glm/gtx/string_cast.hpp"
 #include <glm/gtx/matrix_decompose.hpp>
 
+
 #define SDL_MAIN_HANDLED
 #include "MKCore.h"
 #include "MKGraphics.h"
@@ -24,15 +27,21 @@
 #include "perlinNoise/PerlinNoise.hpp"
 #include "physics/physics.h"
 
+#include "content/contentManager.h"
+
 using namespace MKEngine;
 using namespace MKGraphics;
 
+ContentPipe contentPipe;
+
 mesh* _mesh;
-shader* sh;
-texture* tex;
+ShaderResource* shaderRes;
+ShaderResource* skyboxShader;
+TextureResource* tex;
+
+//texture* tex;
 camera* cam;
 glm::mat4 model = glm::mat4(1.0);
-//MKGame::blocks* blocks;
 
 MKEngine::scene* _scene;
 MKGame::blockMapComponent* blockMap;
@@ -42,8 +51,8 @@ int windowHeight;
 
 void SetupImGuiStyle(bool bStyleDark_, float alpha_);
 
-//std::string solutionDir = "C:\\Users\\Mink\\source\\repos\\MKFramework\\";
-std::string solutionDir = "C:\\Users\\Danila\\Documents\\Github\\MKFramework\\";
+std::string solutionDir = "C:\\Users\\Mink\\source\\repos\\MKFramework\\";
+//std::string solutionDir = "C:\\Users\\Danila\\Documents\\Github\\MKFramework\\";
 
 int mouseLockPosX;
 int mouseLockPosY;
@@ -59,7 +68,6 @@ float camFov = 75.0f;
 MKGame::Hitbox* player;
 
 cubeMap* sky;
-shader* skyboxShader;
 
 void cameraHandleInput(window* wnd, float deltaTime) {
 	float speed = DEFAULT_PLAYER_SPEED;
@@ -147,8 +155,20 @@ void cameraHandleInput(window* wnd, float deltaTime) {
 
 const float timeStep = 1.0f / 60.0f;
 
+float timer = 0;
+const float resCheckDelay = 0.1f;
+
 void winUpdateCallback(window* wnd, float deltaTime) 
 {
+
+	timer += deltaTime;
+	if (timer > resCheckDelay)
+	{
+		contentPipe.updateResources();
+
+		timer = 0;
+	}
+
 	wnd->getSize(&windowWidth, &windowHeight);
 
 	_scene->update();
@@ -200,18 +220,37 @@ void winRenderCallback(window* wnd, float deltaTime)
 	clearColor(75/255.0,159/255.0,220/255.0,1);
 	setViewport(0, 0, wnd->getWidth(), wnd->getHeight());
 	
+	auto sh = shaderRes->sh;
+
+	sh->use();
+	sh->setMat4("camMatrix", cam->Matrix);
+	sh->setMat4("model", model);
+	sh->setVec4("lightColor", glm::vec4(1.0, 0.5, 0.4, 1.0));
+	sh->setVec3("camPos", cam->Position);
+
+	/*
 	sh->use();
 	sh->setMat4("camMatrix", cam->Matrix);
 	sh->setMat4("model", model);
 	sh->setVec4("lightColor", glm::vec4(1.0,0.5,0.4,1.0));
 	sh->setVec3("camPos", cam->Position);
+	*/
 
 	_scene->render();
 
-	MKEngine::Utils::drawQuad(glm::vec3(3,9,2), glm::vec3(0,0,0), glm::vec2(1, 1), glm::vec4(1, 0, 0, 1), cam);
-	MKEngine::Utils::drawLine(player->pos, glm::vec3(3, 9, 2), glm::vec4(0, 1, 0, 1), cam);
+	//MKEngine::Utils::drawLine(player->pos + glm::vec3(0, 1, 0), glm::vec3(3, 9, 2), glm::vec4(0, 1, 0, 1), cam);
+	//MKEngine::Utils::drawLine(player->pos + glm::vec3(0, 1, 0), player->pos+glm::vec3(0,3,0), glm::vec4(1, 1, 1, 1), cam);
 
-	sky->draw(*skyboxShader, *cam);
+
+	MKEngine::Utils::drawLine(glm::vec3(3, 7, 2), glm::vec3(3, 7, 4), glm::vec4(0, 0, 1, 1), cam);
+	MKEngine::Utils::drawLine(glm::vec3(4, 7, 2), glm::vec3(5, 8, 2), glm::vec4(0, 1, 0, 1), cam);
+
+	MKEngine::Utils::drawQuad(glm::vec3(3, 6.8, 2), glm::vec3(0, 0, 0), glm::vec2(1, 1), glm::vec4(1, 0, 0, 0.5), cam);
+	MKEngine::Utils::drawQuad(glm::vec3(3, 6.8, 4), glm::vec3(0, 0, 0), glm::vec2(1, 1), glm::vec4(1, 0, 0, 0.5), cam);
+
+	MKEngine::Utils::drawQuad(glm::vec3(3, 9, 2), glm::vec3(0, 0, 0), glm::vec2(1, 1), glm::vec4(1, 0, 0, 0.5), cam);
+
+	sky->draw(*(skyboxShader->sh), *cam);
 	
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplSDL2_NewFrame(wnd->getNativeWindow());
@@ -252,16 +291,27 @@ int main(int argc, char* args[]) {
 
 	std::string resDir = solutionDir + "resources\\";
 
+	/*
 	sh = new shader(
 		(resDir + "shaders\\diffuse.vert").c_str(),
 		(resDir + "shaders\\diffuse.frag").c_str());
+	*/
 
-	tex = new texture((resDir + "textures\\common\\dirt.png").c_str(), "diffuse", 0, GL_UNSIGNED_BYTE);
+	contentPipe.resourcesDir = resDir;
+	shaderRes = contentPipe.GetResource<ShaderResource>("shaders\\diffuse");
+
+	//tex = new texture((resDir + "textures\\common\\dirt.png").c_str(), "diffuse", 0, GL_UNSIGNED_BYTE);
+
+	tex = contentPipe.GetResource<TextureResource>("textures\\common\\dirt.png");
+	
 
 	cam = new camera(glm::vec3(3, 11, 3));
 	
+	//new texture((resDir + "textures\\blocks.png").c_str(), "diffuse", 0, GL_UNSIGNED_BYTE)
 
-	MKGame::blocks::setTex(new texture((resDir + "textures\\blocks.png").c_str(), "diffuse", 0, GL_UNSIGNED_BYTE));
+	auto ff = contentPipe.GetResource<TextureResource>("textures\\blocks.png");
+
+	MKGame::blocks::setTex(ff->tex);
 	MKGame::blocks::registerData(new MKGame::dirt());
 	MKGame::blocks::registerData(new MKGame::grass());
 
@@ -312,10 +362,11 @@ int main(int argc, char* args[]) {
 	};
 
 	sky = new cubeMap(faces);
-	skyboxShader = new shader((resDir+ "shaders\\skybox.vert").c_str(), (resDir+ "shaders\\skybox.frag").c_str());
-	skyboxShader->use();
-	skyboxShader->setInt("skybox", 0);
-	skyboxShader->useDefault();
+	skyboxShader = contentPipe.GetResource<ShaderResource>("shaders\\skybox");
+	//skyboxShader = new shader((resDir+ "shaders\\skybox.vert").c_str(), (resDir+ "shaders\\skybox.frag").c_str());
+	skyboxShader->sh->use();
+	skyboxShader->sh->setInt("skybox", 0);
+	skyboxShader->sh->useDefault();
 
 	auto glsl_version = "#version 460";
 	IMGUI_CHECKVERSION();
