@@ -1,4 +1,4 @@
-
+#define DEBUG_DRAW
 
 #include "iostream"
 #include <format>
@@ -51,8 +51,8 @@ int windowHeight;
 
 void SetupImGuiStyle(bool bStyleDark_, float alpha_);
 
-std::string solutionDir = "C:\\Users\\Mink\\source\\repos\\MKFramework\\";
-//std::string solutionDir = "C:\\Users\\Danila\\Documents\\Github\\MKFramework\\";
+//std::string solutionDir = "C:\\Users\\Mink\\source\\repos\\MKFramework\\";
+std::string solutionDir = "C:\\Users\\Danila\\Documents\\Github\\MKFramework\\";
 
 int mouseLockPosX;
 int mouseLockPosY;
@@ -214,8 +214,25 @@ void winSDLCallback(window* wnd, SDL_Event event) {
 }
 
 
+glm::vec3 pos1(5,7,4);
+glm::vec3 pos2(5,9,4);
+
+//glm::vec3(5, 7, 4), glm::vec3(5, 9, 4)
+bool isC = true;
+
+namespace ImGui {
+	bool InputVec3(const char* label, glm::vec3 *val) {
+		float v[] = { val->x,val->y,val->z };
+		bool r = ImGui::InputFloat3(label, v);
+		*val = glm::vec3(v[0], v[1], v[2]);
+		return r;
+	}
+}
+
 void winRenderCallback(window* wnd, float deltaTime) 
 {
+	MKEngine::Utils::setCamMatrix(cam->Matrix);
+
 	clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	clearColor(75/255.0,159/255.0,220/255.0,1);
 	setViewport(0, 0, wnd->getWidth(), wnd->getHeight());
@@ -241,14 +258,19 @@ void winRenderCallback(window* wnd, float deltaTime)
 	//MKEngine::Utils::drawLine(player->pos + glm::vec3(0, 1, 0), glm::vec3(3, 9, 2), glm::vec4(0, 1, 0, 1), cam);
 	//MKEngine::Utils::drawLine(player->pos + glm::vec3(0, 1, 0), player->pos+glm::vec3(0,3,0), glm::vec4(1, 1, 1, 1), cam);
 
+	if (Input::getKeyDown(SDL_SCANCODE_F))
+		isC = !isC;
 
-	MKEngine::Utils::drawLine(glm::vec3(3, 7, 2), glm::vec3(3, 7, 4), glm::vec4(0, 0, 1, 1), cam);
-	MKEngine::Utils::drawLine(glm::vec3(4, 7, 2), glm::vec3(5, 8, 2), glm::vec4(0, 1, 0, 1), cam);
+	MKEngine::Utils::setLineWidth(5);
 
-	MKEngine::Utils::drawQuad(glm::vec3(3, 6.8, 2), glm::vec3(0, 0, 0), glm::vec2(1, 1), glm::vec4(1, 0, 0, 0.5), cam);
-	MKEngine::Utils::drawQuad(glm::vec3(3, 6.8, 4), glm::vec3(0, 0, 0), glm::vec2(1, 1), glm::vec4(1, 0, 0, 0.5), cam);
+	if(isC)
+	MKEngine::Utils::drawLine(glm::vec3(3, 7, 2), glm::vec3(3, 7, 4), glm::vec4(0, 0, 1, 1));
+	MKEngine::Utils::drawLine(pos1,pos2, glm::vec4(0, 1, 0, 1));
 
-	MKEngine::Utils::drawQuad(glm::vec3(3, 9, 2), glm::vec3(0, 0, 0), glm::vec2(1, 1), glm::vec4(1, 0, 0, 0.5), cam);
+	MKEngine::Utils::drawQuad(glm::vec3(3, 6.8, 2), glm::vec3(0, 0, 0), glm::vec2(1, 1), glm::vec4(1, 0, 0, 0.5));
+	MKEngine::Utils::drawQuad(glm::vec3(3, 6.8, 4), glm::vec3(0, 0, 0), glm::vec2(1, 1), glm::vec4(1, 0, 0, 0.5));
+
+	MKEngine::Utils::drawQuad(glm::vec3(3, 9, 2), glm::vec3(0, 0, 0), glm::vec2(1, 1), glm::vec4(1, 0, 0, 0.5));
 
 	sky->draw(*(skyboxShader->sh), *cam);
 	
@@ -267,6 +289,13 @@ void winRenderCallback(window* wnd, float deltaTime)
 		ImGui::ShowDemoWindow();
 
 	drawControls();
+
+	ImGui::Begin("LINE TEST");
+	
+	ImGui::InputVec3("Pos1", &pos1);
+	ImGui::InputVec3("Pos2", &pos2);
+
+	ImGui::End();
 
 	MKEditor::drawFrameRate(deltaTime);
 	MKEditor::drawHierarchy(_scene);

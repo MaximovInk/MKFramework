@@ -4,10 +4,9 @@
 #include "MKUtils.h"
 
 MKEngine::mesh* quad;
+MKEngine::mesh* lineQuad;
 shader* colorShader;
 shader* texShader;
-
-std::string solutionDir = "C:\\Users\\Danila\\Documents\\Github\\MKFramework\\";
 
 std::string baseShaderFragCol = "#version 330 core\n\
 out vec4 FragColor;\n\
@@ -127,16 +126,23 @@ MKEngine::mesh* MKEngine::Utils::makeCube()
 	return new MKEngine::mesh(verts,ind);
 }
 
-float lineWidth = 0.5f;
-
 void MKEngine::Utils::setLineWidth(float width)
 {
-	lineWidth = width;
+	glLineWidth(width);
+}
+glm::mat4 camMatrix(1.0);
+void MKEngine::Utils::setCamMatrix(glm::mat4 matrix)
+{
+	camMatrix = matrix;
 }
 
 void checkInit() {
 	if (quad == nullptr) {
 		quad = MKEngine::Utils::makeQuad(glm::vec2(0,0), glm::vec2(1,1), MKGraphics::AXIS_Y);
+	}
+
+	if (lineQuad == nullptr) {
+		lineQuad = MKEngine::Utils::makeQuad(glm::vec2(0, 0), glm::vec2(1, 1), MKGraphics::AXIS_Y);
 	}
 
 	if (colorShader == nullptr) {
@@ -147,7 +153,7 @@ void checkInit() {
 	}
 }
 
-void MKEngine::Utils::drawLine(glm::vec3 pos1, glm::vec3 pos2, glm::vec4 color,camera*cam)
+void MKEngine::Utils::drawLine(glm::vec3 pos1, glm::vec3 pos2, glm::vec4 color)
 {
 	checkInit();
 
@@ -155,24 +161,78 @@ void MKEngine::Utils::drawLine(glm::vec3 pos1, glm::vec3 pos2, glm::vec4 color,c
 	
 	auto dir = glm::normalize(pos1 - pos2);
 	
-	auto camMatrix = cam->Matrix;
+	/*
+	
 	auto model = glm::mat4(1.0);
+	float a_x = std::cos(dir.x);
+	float a_y = std::sin(dir.y);
+	float a_z = 0;
 
-	glm::vec3 right = glm::cross(glm::normalize(glm::vec3(0,1,0)), dir);
+	const glm::mat4 transformX = glm::rotate(glm::mat4(1.0f),
+		a_x,
+		glm::vec3(1.0f, 0.0f, 0.0f));
+	const glm::mat4 transformY = glm::rotate(glm::mat4(1.0f),
+		a_y,
+		glm::vec3(0.0f, 1.0f, 0.0f));
+	const glm::mat4 transformZ = glm::rotate(glm::mat4(1.0f),
+		a_z,
+		glm::vec3(0.0f, 0.0f, 1.0f));
+	*/
+
+	// Y * X * Z
+	//const glm::mat4 rotationMatrix = transformY * transformX * transformZ;
+	/*
+	glm::vec3 right = glm::normalize(glm::cross(glm::vec3(0,1,0), dir));
 	glm::vec3 up = glm::cross(dir, right);
 	//glm::vec3 up = glm::cross(pos1, pos2);
 
 	const glm::mat4 rotationMatrix = glm::lookAt(glm::vec3(0,0,0), dir, up);
+	*/
 
-	model = glm::translate(glm::mat4(1.0f), pos1) * rotationMatrix * glm::scale(glm::mat4(1.0f), glm::vec3(lineWidth, 1.0, length));
+	//model = glm::translate(glm::mat4(1.0f), pos1) * rotationMatrix * glm::scale(glm::mat4(1.0f), glm::vec3(lineWidth, 1.0, length));
+
+	//quad->vertices = 
+
+	/*
+	float dx = pos1.x - pos2.x;
+	float dy = pos1.x - pos2.x;
+	float n = 2;
+	float dst = std::sqrt(dx * dx + dy * dy);
+	dx /= dst;
+	dy /= dst;
+	float x1 = pos1.x + (n / 2) * dy;
+	float y1 = pos1.y - (n / 2) * dx;
+	float x2 = pos1.x - (n / 2) * dy;
+	float y2 = pos1.y + (n / 2) * dx;
+
+	float x3 = pos2.x + (n / 2) * dy;
+	float y3 = pos2.y - (n / 2) * dx;
+	float x4 = pos2.x - (n / 2) * dy;
+	float y4 = pos2.y + (n / 2) * dx;
+	 
+
+	*/
+
+	lineQuad->vertices = std::vector<vertex>{
+	vertex{glm::vec3(pos1.x,pos1.y,pos1.z), glm::vec3(0),glm::vec3(1), glm::vec2(0,0) },
+	vertex{glm::vec3(pos2.x,pos2.y,pos2.z), glm::vec3(0),glm::vec3(1), glm::vec2(0,0) },
+	};
+	lineQuad->indices = std::vector<GLuint>{ 0,1 };
+
+	lineQuad->applyData();
+
+	
 
 	colorShader->use();
 	colorShader->setMat4("camMatrix", camMatrix);
-	colorShader->setMat4("model", model);
+	colorShader->setMat4("model", glm::mat4(1.0f));
 	colorShader->setVec4("color", color);
-	colorShader->setVec3("camPos", cam->Position);
 
-	quad->draw();
+	lineQuad->VAO.Bind();
+	//glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_LINES, lineQuad->indices.size(), GL_UNSIGNED_INT, 0);
+
+	//lineQuad->draw();
 
 }
 
@@ -183,11 +243,10 @@ void MKEngine::Utils::drawLine(glm::vec3 pos1, glm::vec3 pos2, texture texure)
 
 }
 
-void MKEngine::Utils::drawQuad(glm::vec3 pos, glm::vec3 rot, glm::vec2 size, glm::vec4 color, camera* cam)
+void MKEngine::Utils::drawQuad(glm::vec3 pos, glm::vec3 rot, glm::vec2 size, glm::vec4 color)
 {
 	checkInit();
 
-	auto camMatrix = cam->Matrix;
 	auto model = glm::mat4(1.0);
 	const glm::mat4 transformX = glm::rotate(glm::mat4(1.0f),
 		glm::radians(rot.x),
@@ -208,7 +267,6 @@ void MKEngine::Utils::drawQuad(glm::vec3 pos, glm::vec3 rot, glm::vec2 size, glm
 	colorShader->setMat4("camMatrix", camMatrix);
 	colorShader->setMat4("model", model);
 	colorShader->setVec4("color", color);
-	colorShader->setVec3("camPos", cam->Position);
 
 	quad->draw();
 
@@ -217,6 +275,14 @@ void MKEngine::Utils::drawQuad(glm::vec3 pos, glm::vec3 rot, glm::vec2 size, glm
 void MKEngine::Utils::drawQuad(glm::vec3 pos, glm::vec4 size, texture texure)
 {
 	checkInit();
+}
+
+void MKEngine::Utils::beginRender()
+{
+}
+
+void MKEngine::Utils::endRender()
+{
 }
 
 

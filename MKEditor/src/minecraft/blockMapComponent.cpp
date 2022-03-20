@@ -1,4 +1,5 @@
 #include "blockMapComponent.h"
+#include "graphicsUtils.h"
 
 void MKGame::blockMapComponent::setTile(glm::ivec3 pos, int tileID) {
 	auto _chunk = getChunkOrCreateAt(pos);
@@ -56,11 +57,35 @@ void MKGame::blockMapComponent::render() {
 	for (it = chunksCache.begin(); it != chunksCache.end(); it++)
 	{
 		auto chunk = it->second;
+
 		if (chunk->gridPos.x >= bounds.x && chunk->gridPos.x <= bounds.z && chunk->gridPos.y >= bounds.y && chunk->gridPos.y <= bounds.w)
 		{
 			it->second->draw();
 		}
 	}
+
+#if (1)
+
+	for (it = chunksCache.begin(); it != chunksCache.end(); it++)
+	{
+		auto chunk = it->second;
+
+		if (chunk->gridPos.x >= bounds.x && chunk->gridPos.x <= bounds.z && chunk->gridPos.y >= bounds.y && chunk->gridPos.y <= bounds.w)
+		{
+			glm::vec3 min = chunk->position;
+			glm::vec3 max = chunk->position + glm::vec3(CHUNK_W, CHUNK_H, CHUNK_D);
+			
+/*
+#if DEBUG_DRAW
+			MKEngine::Utils::drawLine(min, glm::vec3(max.x, min.y, min.z), glm::vec4(0, 1, 0, 1));
+			MKEngine::Utils::drawLine(min, glm::vec3(min.x, max.y, min.z), glm::vec4(0, 1, 0, 1));
+			MKEngine::Utils::drawLine(min, glm::vec3(max.x, min.y, max.z), glm::vec4(0, 1, 0, 1));
+#endif
+*/
+		}
+	}
+
+#endif
 }
 
 MKGame::chunk* MKGame::blockMapComponent::getChunkOrCreateAt(glm::ivec3 pos, bool create)
